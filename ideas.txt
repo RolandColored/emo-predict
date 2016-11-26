@@ -1,0 +1,17 @@
+Regression
+    SVR
+    BayesianRidge
+        one model for each label
+
+    DecisionTreeRegressor
+    RandomForestRegressor
+    KNeighborsRegressor
+    MultiTaskLasso
+    MultiTaskElasticNet
+        out-of-the-box
+
+Classification
+    Naive Bayes
+    SVM
+        discretize annotation to binary format
+        one model for each label
