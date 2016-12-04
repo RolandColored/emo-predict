@@ -11,14 +11,17 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import cross_val_score
 
 from datasource import DataSource
-from featuretransform.german import FeatureTransformGerman
+from featuretransform.transformer import Transformer
 
 # data
-
 data_source = DataSource('bild')
-data_source.generate_features(FeatureTransformGerman())
-data_set = data_source.get_data_set()
+transformer = Transformer('de')
 
+for row in data_source.next_row():
+    transformer.process_row(row)
+
+samples = transformer.title_vectors
+labels = transformer.labels
 
 # config
 regressor_list = [
@@ -28,8 +31,8 @@ regressor_list = [
     MultiTaskLasso(random_state=0),
     MultiTaskElasticNet(random_state=0),
     MultiOutputRegressor(SVR(kernel='rbf', C=1e3, gamma=0.1)),
-    # MultiOutputRegressor(SVR(kernel='poly', C=1e3, degree=2)),
-    # MultiOutputRegressor(SVR(kernel='linear', C=1e3)),
+    MultiOutputRegressor(SVR(kernel='poly', C=1e3, degree=2)),
+    MultiOutputRegressor(SVR(kernel='linear', C=1e3)),
     MultiOutputRegressor(NuSVR(C=1.0, nu=0.1)),
     MultiOutputRegressor(GradientBoostingRegressor(random_state=0)),
     MultiOutputRegressor(BayesianRidge()),
@@ -38,7 +41,7 @@ regressor_list = [
 
 # evaluate
 for regressor in regressor_list:
-    scores = cross_val_score(regressor, data_set['X'], data_set['y'])
+    scores = cross_val_score(regressor, samples, labels)
 
     if isinstance(regressor, MultiOutputRegressor):
         regressor_name = regressor.estimator.__class__.__name__
