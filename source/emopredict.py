@@ -20,7 +20,7 @@ transformer = Transformer('de')
 for row in data_source.next_row():
     transformer.process_row(row)
 
-samples = transformer.title_vectors
+samples = transformer.get_all_vectorized()
 labels = transformer.labels
 
 # config
@@ -30,10 +30,10 @@ regressor_list = [
     KNeighborsRegressor(),
     MultiTaskLasso(random_state=0),
     MultiTaskElasticNet(random_state=0),
-    MultiOutputRegressor(SVR(kernel='rbf', C=1e3, gamma=0.1)),
-    MultiOutputRegressor(SVR(kernel='poly', C=1e3, degree=2)),
-    MultiOutputRegressor(SVR(kernel='linear', C=1e3)),
-    MultiOutputRegressor(NuSVR(C=1.0, nu=0.1)),
+    MultiOutputRegressor(SVR(kernel='rbf')),
+    MultiOutputRegressor(SVR(kernel='poly')),
+    MultiOutputRegressor(SVR(kernel='linear')),
+    MultiOutputRegressor(NuSVR()),
     MultiOutputRegressor(GradientBoostingRegressor(random_state=0)),
     MultiOutputRegressor(BayesianRidge()),
 ]
