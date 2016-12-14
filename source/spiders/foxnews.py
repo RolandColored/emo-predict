@@ -5,9 +5,9 @@ import csv
 from w3lib.html import remove_tags, replace_escape_chars
 
 
-class BildSpider(scrapy.Spider):
-    name = 'bild'
-    base = 'http://www.bild.de'
+class FoxnewsSpider(scrapy.Spider):
+    name = 'foxnews'
+    base = 'http://www.foxnews.com'
     results = []
 
     def start_requests(self):
@@ -20,8 +20,8 @@ class BildSpider(scrapy.Spider):
                     yield request
 
     def parse(self, response):
-        title = self._clean(response.css('article header h1::text').extract_first())
-        paragraphs = self._clean(' '.join(response.css('article div.txt > p').extract()))
+        title = self._clean(response.css('article h1::text').extract_first())
+        paragraphs = self._clean(' '.join(response.css('article div.article-text > p').extract()))
         crawled_data = {'title': title, 'text': paragraphs}
         yield dict(ChainMap(response.meta['data'], crawled_data))
 
