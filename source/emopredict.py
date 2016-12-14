@@ -17,11 +17,17 @@ from featuretransform.transformer import Transformer
 data_source = DataSource('bild')
 transformer = Transformer('de')
 
+print("Initialized transformer")
+
 for row in data_source.next_row():
     transformer.process_row(row)
 
-samples = transformer.get_all_vectorized()
+print("Data processed")
+
+samples = transformer.get_common_nouns_vectors()
 labels = transformer.labels
+
+print("Generated features")
 
 # config
 regressor_list = [
@@ -32,7 +38,6 @@ regressor_list = [
     MultiTaskElasticNet(random_state=0),
     MultiOutputRegressor(SVR(kernel='rbf')),
     MultiOutputRegressor(SVR(kernel='poly')),
-    MultiOutputRegressor(SVR(kernel='linear')),
     MultiOutputRegressor(NuSVR()),
     MultiOutputRegressor(GradientBoostingRegressor(random_state=0)),
     MultiOutputRegressor(BayesianRidge()),

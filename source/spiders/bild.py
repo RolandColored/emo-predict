@@ -12,7 +12,7 @@ class BildSpider(scrapy.Spider):
 
     def start_requests(self):
         with open('../fb-data/' + self.name + '.csv') as csvfile:
-            reader = csv.DictReader(csvfile, delimiter=';')
+            reader = csv.DictReader(csvfile, delimiter=',')
             for row in reader:
                 if row['link'] is not None and row['link'].startswith(self.base):
                     request = scrapy.Request(row['link'], self.parse)
