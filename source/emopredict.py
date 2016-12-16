@@ -3,12 +3,11 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import BayesianRidge
 from sklearn.linear_model import MultiTaskElasticNet
 from sklearn.linear_model import MultiTaskLasso
+from sklearn.model_selection import cross_val_score
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.svm import NuSVR
-from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.model_selection import cross_val_score
 
 from datasource import DataSource
 from featuretransform.transformer import Transformer
@@ -21,13 +20,14 @@ print("Initialized transformer")
 
 for row in data_source.next_row():
     transformer.process_row(row)
+    print('.', end="")
 
 print("Data processed")
 
-samples = transformer.get_common_nouns_vectors()
+samples = transformer.get_all_count_vectors()
 labels = transformer.labels
 
-print("Generated features")
+print("Generated ", len(samples[0]), " features")
 
 # config
 regressor_list = [
@@ -36,9 +36,9 @@ regressor_list = [
     KNeighborsRegressor(),
     MultiTaskLasso(random_state=0),
     MultiTaskElasticNet(random_state=0),
-    MultiOutputRegressor(SVR(kernel='rbf')),
-    MultiOutputRegressor(SVR(kernel='poly')),
-    MultiOutputRegressor(NuSVR()),
+    MultiOutputRegressor(NuSVR(kernel='rbf')),
+    MultiOutputRegressor(NuSVR(kernel='poly')),
+    MultiOutputRegressor(NuSVR(kernel='sigmoid')),
     MultiOutputRegressor(GradientBoostingRegressor(random_state=0)),
     MultiOutputRegressor(BayesianRidge()),
 ]
@@ -46,7 +46,7 @@ regressor_list = [
 
 # evaluate
 for regressor in regressor_list:
-    scores = cross_val_score(regressor, samples, labels)
+    scores = cross_val_score(regressor, samples, labels, n_jobs=-1)
 
     if isinstance(regressor, MultiOutputRegressor):
         regressor_name = regressor.estimator.__class__.__name__

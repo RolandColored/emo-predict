@@ -9,9 +9,13 @@ class Document:
     def __init__(self, nlp, row):
         self.title = nlp(self._clean_text(row['title']))
         self.text = nlp(self._clean_text(row['text']))
+        self.message = nlp(self._clean_text(row['message']))
 
-    def get_title_vector(self):
+    def get_title_glove_vector(self):
         return self.title.vector
+
+    def get_message_glove_vector(self):
+        return self.message.vector
 
     def get_common_nouns(self):
         nouns_text = [token.lemma_ for token in self.text if token.pos_ in ['NOUN', 'PROPN']]
