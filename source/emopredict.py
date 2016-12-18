@@ -13,10 +13,11 @@ from datasource import DataSource
 from featuretransform.transformer import Transformer
 
 # data
-data_source = DataSource('foxnews')
-transformer = Transformer('en')
+data_source = DataSource('bild')
+transformer = Transformer('de')
 
-print("Initialized transformer")
+print(dir(data_source))
+print(dir(transformer))
 
 for row in data_source.next_row():
     transformer.process_row(row)
