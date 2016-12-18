@@ -1,28 +1,38 @@
+import re
+from collections import Counter
+
 import spacy
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, strip_accents_ascii
 
-from featuretransform.document import Document
+
+def _clean_text(text):
+    text = strip_accents_ascii(text)
+    text = text.replace('"', '')
+    text = re.sub(r'(\([0-9]*\))', '', text)
+    return text
 
 
 class Transformer:
 
-    labels = []
-    title_glove_vectors = []
-    message_glove_vectors = []
-    common_nouns = []
-    corpus = []
+    lang = ''
+    rows = []
+    nlp = None
 
     def __init__(self, lang):
-        self.nlp = spacy.load(lang)
+        self.lang = lang
 
     def process_row(self, row):
-        self.corpus.append(row['text'])
-        doc = Document(self.nlp, row)
-        self.labels.append(row['labels'])
-        self.title_glove_vectors.append(doc.get_title_glove_vector())
-        self.message_glove_vectors.append(doc.get_message_glove_vector())
-        self.common_nouns.append({noun_count[0]: noun_count[1] for noun_count in doc.get_common_nouns()})
+        self.rows.append(row)
+
+        #self.corpus.append(row['text'])
+        #doc = Document(self.nlp, row)
+        #self.title_glove_vectors.append(doc.get_title_glove_vector())
+        #self.message_glove_vectors.append(doc.get_message_glove_vector())
+        #self.common_nouns.append({noun_count[0]: noun_count[1] for noun_count in doc.get_common_nouns()})
+
+    def get_labels(self):
+        return [row['labels'] for row in self.rows]
 
     def get_title_glove_vectors(self):
         return self.title_glove_vectors
@@ -36,9 +46,13 @@ class Transformer:
         return features.toarray()
 
     def get_all_count_vectors(self):
-        vectorizer = CountVectorizer(min_df=0.01, max_df=0.8, ngram_range=(1, 1))
+        vectorizer = CountVectorizer(min_df=0.001, max_df=0.8, ngram_range=(1, 1))
         tfidf = TfidfTransformer()
 
-        data = vectorizer.fit_transform(self.corpus)
+        data = vectorizer.fit_transform([_clean_text(row['text']) for row in self.rows])
         data = tfidf.fit_transform(data)
         return data.toarray()
+
+    def _init_nlp(self):
+        if self.nlp is None:
+            self.nlp = spacy.load(self.lang)

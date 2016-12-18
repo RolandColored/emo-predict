@@ -16,6 +16,6 @@ class DataSource:
             reader = csv.DictReader(csvFile)
             for row in reader:
                 reactions = [int(row[key]) for key in reaction_types]
-                row['labels'] = reactions#[value / sum(reactions) for value in reactions]
+                row['labels'] = [value / sum(reactions) for value in reactions]
                 yield row
 

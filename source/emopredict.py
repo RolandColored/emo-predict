@@ -20,12 +20,11 @@ print("Initialized transformer")
 
 for row in data_source.next_row():
     transformer.process_row(row)
-    print('.', end="")
 
 print("Data processed")
 
 samples = transformer.get_all_count_vectors()
-labels = transformer.labels
+labels = transformer.get_labels()
 
 print("Generated ", len(samples[0]), " features")
 
@@ -46,7 +45,7 @@ regressor_list = [
 
 # evaluate
 for regressor in regressor_list:
-    scores = cross_val_score(regressor, samples, labels, n_jobs=-1)
+    scores = cross_val_score(regressor, samples, labels, n_jobs=-4)
 
     if isinstance(regressor, MultiOutputRegressor):
         regressor_name = regressor.estimator.__class__.__name__
