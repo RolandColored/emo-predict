@@ -8,13 +8,13 @@ from sklearn.multioutput import MultiOutputRegressor
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.svm import NuSVR
 from sklearn.tree import DecisionTreeRegressor
-
+from joblib import Parallel, delayed
 from datasource import DataSource
 from featuretransform.transformer import Transformer
 
 # data
-data_source = DataSource('bild')
-transformer = Transformer('de')
+data_source = DataSource('foxnews')
+transformer = Transformer('en')
 
 print("Initialized transformer")
 
@@ -44,8 +44,8 @@ regressor_list = [
 
 
 # evaluate
-for regressor in regressor_list:
-    scores = cross_val_score(regressor, samples, labels, n_jobs=-4)
+def run_evaluation(regressor):
+    scores = cross_val_score(regressor, samples, labels)
 
     if isinstance(regressor, MultiOutputRegressor):
         regressor_name = regressor.estimator.__class__.__name__
@@ -54,3 +54,4 @@ for regressor in regressor_list:
 
     print(regressor_name, "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
+Parallel(n_jobs=4)(delayed(run_evaluation)(regressor) for regressor in regressor_list)

@@ -46,7 +46,7 @@ class Transformer:
         return features.toarray()
 
     def get_all_count_vectors(self):
-        vectorizer = CountVectorizer(min_df=0.001, max_df=0.8, ngram_range=(1, 1))
+        vectorizer = CountVectorizer(min_df=0.001, max_df=0.9, ngram_range=(1, 1))
         tfidf = TfidfTransformer()
 
         data = vectorizer.fit_transform([_clean_text(row['text']) for row in self.rows])
