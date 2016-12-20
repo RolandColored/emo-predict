@@ -16,8 +16,8 @@ from featuretransform.transformer import Transformer
 data_source = DataSource('bild')
 transformer = Transformer('de')
 
-print(dir(data_source))
-print(dir(transformer))
+print("Data: ", data_source.name)
+print("Transformer lang: ", transformer.lang)
 
 for row in data_source.next_row():
     transformer.process_row(row)

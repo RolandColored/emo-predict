@@ -8,7 +8,6 @@ from w3lib.html import remove_tags, replace_escape_chars
 class SZSpider(scrapy.Spider):
     name = 'ihre.sz'
     base = 'http://www.sueddeutsche.de'
-    results = []
 
     def start_requests(self):
         with open('../fb-data/' + self.name + '.csv') as csvfile:

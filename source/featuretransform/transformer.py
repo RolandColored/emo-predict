@@ -14,7 +14,6 @@ def _clean_text(text):
 
 
 class Transformer:
-
     lang = ''
     rows = []
     nlp = None
@@ -25,11 +24,11 @@ class Transformer:
     def process_row(self, row):
         self.rows.append(row)
 
-        #self.corpus.append(row['text'])
-        #doc = Document(self.nlp, row)
-        #self.title_glove_vectors.append(doc.get_title_glove_vector())
-        #self.message_glove_vectors.append(doc.get_message_glove_vector())
-        #self.common_nouns.append({noun_count[0]: noun_count[1] for noun_count in doc.get_common_nouns()})
+        # self.corpus.append(row['text'])
+        # doc = Document(self.nlp, row)
+        # self.title_glove_vectors.append(doc.get_title_glove_vector())
+        # self.message_glove_vectors.append(doc.get_message_glove_vector())
+        # self.common_nouns.append({noun_count[0]: noun_count[1] for noun_count in doc.get_common_nouns()})
 
     def get_labels(self):
         return [row['labels'] for row in self.rows]
@@ -47,10 +46,10 @@ class Transformer:
 
     def get_all_count_vectors(self):
         vectorizer = CountVectorizer(min_df=0.001, max_df=0.9, ngram_range=(1, 1))
+        print("CountVectorizer(min_df=", vectorizer.min_df, ", max_df=", vectorizer.max_df, ", ngram_range=",
+              vectorizer.ngram_range, ")")
 
-        print(dir(vectorizer))
         tfidf = TfidfTransformer()
-        print(dir(tfidf))
 
         data = vectorizer.fit_transform([_clean_text(row['text']) for row in self.rows])
         data = tfidf.fit_transform(data)

@@ -8,7 +8,6 @@ from w3lib.html import remove_tags, replace_escape_chars
 class FoxnewsSpider(scrapy.Spider):
     name = 'foxnews'
     base = ['http://www.foxnews.com', 'http://insider.foxnews.com']
-    results = []
 
     def start_requests(self):
         with open('../fb-data/' + self.name + '.csv') as csvfile:
