@@ -2,6 +2,7 @@ import re
 from collections import Counter
 
 import spacy
+from numpy import concatenate
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, strip_accents_ascii
 
@@ -23,21 +24,14 @@ class Transformer:
 
     def process_row(self, row):
         self.rows.append(row)
-
-        # self.corpus.append(row['text'])
-        # doc = Document(self.nlp, row)
-        # self.title_glove_vectors.append(doc.get_title_glove_vector())
-        # self.message_glove_vectors.append(doc.get_message_glove_vector())
         # self.common_nouns.append({noun_count[0]: noun_count[1] for noun_count in doc.get_common_nouns()})
 
     def get_labels(self):
         return [row['labels'] for row in self.rows]
 
-    def get_title_glove_vectors(self):
-        return self.title_glove_vectors
-
-    def get_message_glove_vectors(self):
-        return self.message_glove_vectors
+    def get_title_message_glove_vectors(self):
+        print("title+message glove vectors")
+        return [(list(self._get_glove_vector(row['title'])) + list(self._get_glove_vector(row['message']))) for row in self.rows]
 
     def get_common_nouns_vectors(self):
         vec = DictVectorizer()
@@ -48,13 +42,16 @@ class Transformer:
         vectorizer = CountVectorizer(min_df=0.001, max_df=0.9, ngram_range=(1, 1))
         print("CountVectorizer(min_df=", vectorizer.min_df, ", max_df=", vectorizer.max_df, ", ngram_range=",
               vectorizer.ngram_range, ")")
-
         tfidf = TfidfTransformer()
 
         data = vectorizer.fit_transform([_clean_text(row['text']) for row in self.rows])
         data = tfidf.fit_transform(data)
         return data.toarray()
 
-    def _init_nlp(self):
+    def _get_nlp(self) -> object:
         if self.nlp is None:
             self.nlp = spacy.load(self.lang)
+        return self.nlp
+    
+    def _get_glove_vector(self, text):
+        return self._get_nlp()(text).vector
