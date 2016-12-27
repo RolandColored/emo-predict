@@ -26,6 +26,9 @@ class Transformer:
         self.rows.append(row)
         # self.common_nouns.append({noun_count[0]: noun_count[1] for noun_count in doc.get_common_nouns()})
 
+    def get_num_rows(self):
+        return len(self.rows)
+
     def get_labels(self):
         return [row['labels'] for row in self.rows]
 
