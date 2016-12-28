@@ -24,7 +24,7 @@ for row in data_source.next_row():
 
 print(transformer.get_num_rows(), "Samples processed")
 
-samples = transformer.get_bag_of_nouns_count()
+samples = transformer.get_bag_of_nouns_tfidf()
 labels = transformer.get_labels()
 
 print("Generated", len(samples[0]), "features")

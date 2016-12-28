@@ -4,8 +4,10 @@ import scrapy
 import csv
 from w3lib.html import remove_tags, replace_escape_chars
 
+from spiders.base import BaseSpider
 
-class FoxnewsSpider(scrapy.Spider):
+
+class FoxnewsSpider(BaseSpider):
     name = 'foxnews'
     base = ['http://www.foxnews.com', 'http://insider.foxnews.com']
 
@@ -28,6 +30,3 @@ class FoxnewsSpider(scrapy.Spider):
 
         crawled_data = {'title': title, 'text': paragraphs}
         yield dict(ChainMap(response.meta['data'], crawled_data))
-
-    def _clean(self, text):
-        return replace_escape_chars(remove_tags(text)).replace('\xa0', ' ').strip()

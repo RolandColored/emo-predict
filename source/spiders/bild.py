@@ -4,19 +4,12 @@ import scrapy
 import csv
 from w3lib.html import remove_tags, replace_escape_chars
 
+from spiders.base import BaseSpider
 
-class BildSpider(scrapy.Spider):
+
+class BildSpider(BaseSpider):
     name = 'bild'
     base = 'http://www.bild.de'
-
-    def start_requests(self):
-        with open('../fb-data/' + self.name + '.csv') as csvfile:
-            reader = csv.DictReader(csvfile, delimiter=',')
-            for row in reader:
-                if row['link'] is not None and row['link'].startswith(self.base):
-                    request = scrapy.Request(row['link'], self.parse)
-                    request.meta['data'] = row
-                    yield request
 
     def parse(self, response):
         title = self._clean(response.css('article header h1::text').extract_first())

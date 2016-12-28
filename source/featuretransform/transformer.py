@@ -35,19 +35,20 @@ class Transformer:
         print("title+message glove vectors")
         return [(list(self._get_glove_vector(row['title'])) + list(self._get_glove_vector(row['message']))) for row in self.rows]
 
-    def get_bag_of_nouns_count(self):
+    def get_bag_of_nouns_tfidf(self):
         common_nouns = []
         for row in self.rows:
             common_nouns.append({noun_count[0]: noun_count[1] for noun_count in self._get_common_nouns(row)})
 
         vectorizer = DictVectorizer()
+        print("DictVectorizer()")
         tfidf = TfidfTransformer()
 
         data = vectorizer.fit_transform(common_nouns)
         data = tfidf.fit_transform(data)
         return data.toarray()
 
-    def get_bag_of_word_tfidf(self):
+    def get_bag_of_words_tfidf(self):
         vectorizer = CountVectorizer(min_df=0.001, max_df=0.9, ngram_range=(1, 1))
         print("CountVectorizer(min_df=", vectorizer.min_df, ", max_df=", vectorizer.max_df, ", ngram_range=",
               vectorizer.ngram_range, ")")
