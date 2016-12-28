@@ -13,8 +13,8 @@ from datasource import DataSource
 from featuretransform.transformer import Transformer
 
 # data
-data_source = DataSource('nytimes')
-transformer = Transformer('en')
+data_source = DataSource('ihre.sz')
+transformer = Transformer('de')
 
 print("Data:", data_source.name)
 print("Transformer lang:", transformer.lang)
@@ -24,23 +24,23 @@ for row in data_source.next_row():
 
 print(transformer.get_num_rows(), "Samples processed")
 
-samples = transformer.get_all_count_vectors()
+samples = transformer.get_bag_of_nouns_count()
 labels = transformer.get_labels()
 
 print("Generated", len(samples[0]), "features")
 
 # config
 regressor_list = [
+    MultiOutputRegressor(BayesianRidge()),
+    MultiOutputRegressor(GradientBoostingRegressor(random_state=0)),
+    MultiOutputRegressor(NuSVR(kernel='rbf')),
+    MultiOutputRegressor(NuSVR(kernel='poly')),
+    MultiOutputRegressor(NuSVR(kernel='sigmoid')),
     DecisionTreeRegressor(random_state=0),
     RandomForestRegressor(random_state=0),
     KNeighborsRegressor(),
     MultiTaskLasso(random_state=0),
     MultiTaskElasticNet(random_state=0),
-    MultiOutputRegressor(NuSVR(kernel='rbf')),
-    MultiOutputRegressor(NuSVR(kernel='poly')),
-    MultiOutputRegressor(NuSVR(kernel='sigmoid')),
-    MultiOutputRegressor(GradientBoostingRegressor(random_state=0)),
-    MultiOutputRegressor(BayesianRidge()),
 ]
 
 

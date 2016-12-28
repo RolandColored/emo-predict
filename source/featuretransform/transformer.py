@@ -24,7 +24,6 @@ class Transformer:
 
     def process_row(self, row):
         self.rows.append(row)
-        # self.common_nouns.append({noun_count[0]: noun_count[1] for noun_count in doc.get_common_nouns()})
 
     def get_num_rows(self):
         return len(self.rows)
@@ -32,16 +31,23 @@ class Transformer:
     def get_labels(self):
         return [row['labels'] for row in self.rows]
 
-    def get_title_message_glove_vectors(self):
+    def get_title_message_glove(self):
         print("title+message glove vectors")
         return [(list(self._get_glove_vector(row['title'])) + list(self._get_glove_vector(row['message']))) for row in self.rows]
 
-    def get_common_nouns_vectors(self):
-        vec = DictVectorizer()
-        features = vec.fit_transform(self.common_nouns)
-        return features.toarray()
+    def get_bag_of_nouns_count(self):
+        common_nouns = []
+        for row in self.rows:
+            common_nouns.append({noun_count[0]: noun_count[1] for noun_count in self._get_common_nouns(row)})
 
-    def get_all_count_vectors(self):
+        vectorizer = DictVectorizer()
+        tfidf = TfidfTransformer()
+
+        data = vectorizer.fit_transform(common_nouns)
+        data = tfidf.fit_transform(data)
+        return data.toarray()
+
+    def get_bag_of_word_tfidf(self):
         vectorizer = CountVectorizer(min_df=0.001, max_df=0.9, ngram_range=(1, 1))
         print("CountVectorizer(min_df=", vectorizer.min_df, ", max_df=", vectorizer.max_df, ", ngram_range=",
               vectorizer.ngram_range, ")")
@@ -51,10 +57,16 @@ class Transformer:
         data = tfidf.fit_transform(data)
         return data.toarray()
 
-    def _get_nlp(self) -> object:
+    def _get_common_nouns(self, row):
+        nouns_text = [token.lemma_ for token in self._get_nlp(row['text']) if token.pos_ in ['NOUN', 'PROPN']]
+        nouns_title = [token.lemma_ for token in self._get_nlp(row['title']) if token.pos_ in ['NOUN', 'PROPN']]
+        common_nouns = Counter(nouns_title) + Counter(nouns_text)
+        return common_nouns.most_common(5)
+
+    def _get_nlp(self, text):
         if self.nlp is None:
             self.nlp = spacy.load(self.lang)
-        return self.nlp
+        return self.nlp(text)
     
     def _get_glove_vector(self, text):
-        return self._get_nlp()(text).vector
+        return self._get_nlp(text).vector
