@@ -30,12 +30,11 @@ print('Datasource', data_source.get_desc())
 # feature generation
 for row in data_source.next_row():
     transformer.process_row(row)
-
 print(transformer.get_num_rows(), "Samples processed")
-print(transformer.desc)
 
 samples = transformer.get_bag_of_words_tfidf()
 labels = transformer.get_labels()
+print(transformer.desc)
 
 
 # result data
