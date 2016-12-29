@@ -3,6 +3,8 @@ import time
 from collections import OrderedDict
 from statistics import mean, stdev
 
+from sklearn.ensemble import AdaBoostRegressor
+from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import BayesianRidge
@@ -50,16 +52,18 @@ print("Generated", results['num_features'], "features")
 
 # config
 regressor_list = [
-    DecisionTreeRegressor(random_state=0),
-    RandomForestRegressor(random_state=0),
+    DecisionTreeRegressor(),
+    RandomForestRegressor(),
     KNeighborsRegressor(),
-    MultiTaskLasso(random_state=0),
-    MultiTaskElasticNet(random_state=0),
+    MultiTaskLasso(),
+    MultiTaskElasticNet(),
     MultiOutputRegressor(BayesianRidge()),
-    MultiOutputRegressor(GradientBoostingRegressor(random_state=0)),
+    MultiOutputRegressor(GradientBoostingRegressor()),
     MultiOutputRegressor(NuSVR(kernel='rbf')),
     MultiOutputRegressor(NuSVR(kernel='poly')),
     MultiOutputRegressor(NuSVR(kernel='sigmoid')),
+    ExtraTreesRegressor(),
+    MultiOutputRegressor(AdaBoostRegressor()),
 ]
 
 
@@ -79,7 +83,7 @@ for regressor in regressor_list:
     print(regressor_name, 'Accuracy: %0.2f (+/- %0.2f)' % (scores.mean(), scores.std()))
 
 results['end_time'] = time.ctime()
-
+exit()
 
 # write results
 with open('../results.csv', 'a') as csvfile:

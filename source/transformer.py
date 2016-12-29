@@ -2,7 +2,6 @@ import re
 from collections import Counter
 
 import spacy
-from numpy import concatenate
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, strip_accents_ascii
 

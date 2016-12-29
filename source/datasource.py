@@ -28,6 +28,3 @@ class DataSource:
                         yield row
                     else:
                         self.skip_counter += 1
-
-            print(self.skip_counter, 'rows skipped')
-
