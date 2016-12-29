@@ -22,10 +22,9 @@ results = OrderedDict()
 results['start_time'] = time.ctime()
 results['end_time'] = None
 
-data_source = DataSource('theguardian')
-transformer = Transformer('en')
-
-results['data_source'] = data_source.name
+data_source = DataSource(['bild', 'spiegelonline', 'ihre.sz'])
+transformer = Transformer('de')
+print('Datasource', data_source.get_desc())
 
 
 # feature generation
@@ -33,15 +32,19 @@ for row in data_source.next_row():
     transformer.process_row(row)
 
 print(transformer.get_num_rows(), "Samples processed")
+print(transformer.desc)
+
+samples = transformer.get_bag_of_words_tfidf()
+labels = transformer.get_labels()
+
+
+# result data
+results['data_source'] = data_source.get_desc()
 results['num_samples'] = transformer.get_num_rows()
 results['num_skipped'] = data_source.skip_counter
 results['reaction_count_mean'] = mean(data_source.absolute_reactions)
 results['reaction_count_stdev'] = stdev(data_source.absolute_reactions, results['reaction_count_mean'])
 results['feature_generator'] = transformer.desc
-
-samples = transformer.get_bag_of_words_tfidf()
-labels = transformer.get_labels()
-
 results['num_features'] = len(samples[0])
 print("Generated", results['num_features'], "features")
 

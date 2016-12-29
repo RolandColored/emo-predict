@@ -53,7 +53,6 @@ class Transformer:
         vectorizer = CountVectorizer(min_df=0.001, max_df=0.9, ngram_range=(1, 1))
         tfidf = TfidfTransformer()
         self.desc = str(vectorizer) + '\n' + str(tfidf)
-        print(self.desc)
 
         data = vectorizer.fit_transform([_clean_text(row['text']) for row in self.rows])
         data = tfidf.fit_transform(data)
