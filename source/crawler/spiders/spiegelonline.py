@@ -1,6 +1,6 @@
 from collections import ChainMap
 
-from spiders.base import BaseSpider
+from crawler.spiders.base import BaseSpider
 
 
 class SpiegelOnlineSpider(BaseSpider):

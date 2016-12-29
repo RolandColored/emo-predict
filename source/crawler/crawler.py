@@ -1,7 +1,6 @@
 from scrapy.crawler import CrawlerProcess
 
-from spiders.spiegelonline import SpiegelOnlineSpider
-from spiders.theguardian import TheGuardianSpider
+from crawler.spiders.theguardian import TheGuardianSpider
 
 spider = TheGuardianSpider()
 

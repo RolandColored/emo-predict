@@ -1,10 +1,9 @@
+import csv
 from collections import ChainMap
 
 import scrapy
-import csv
-from w3lib.html import remove_tags, replace_escape_chars
 
-from spiders.base import BaseSpider
+from crawler.spiders.base import BaseSpider
 
 
 class FoxnewsSpider(BaseSpider):
