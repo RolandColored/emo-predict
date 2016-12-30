@@ -83,7 +83,7 @@ for regressor in regressor_list:
     print(regressor_name, 'Accuracy: %0.2f (+/- %0.2f)' % (scores.mean(), scores.std()))
 
 results['end_time'] = time.ctime()
-exit()
+
 
 # write results
 with open('../results.csv', 'a') as csvfile:

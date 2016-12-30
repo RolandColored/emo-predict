@@ -49,7 +49,7 @@ class Transformer:
         return data.toarray()
 
     def get_bag_of_words_tfidf(self):
-        vectorizer = CountVectorizer(min_df=0.001, max_df=0.9, ngram_range=(1, 1))
+        vectorizer = CountVectorizer(min_df=0.002, max_df=0.9, ngram_range=(1, 1))
         tfidf = TfidfTransformer()
         self.desc = str(vectorizer) + '\n' + str(tfidf)
 
