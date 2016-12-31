@@ -7,12 +7,14 @@ from sklearn.ensemble import AdaBoostRegressor
 from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer
 from sklearn.linear_model import BayesianRidge
 from sklearn.linear_model import MultiTaskElasticNet
 from sklearn.linear_model import MultiTaskLasso
 from sklearn.model_selection import cross_val_score
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.neighbors import KNeighborsRegressor
+from sklearn.pipeline import make_pipeline
 from sklearn.svm import NuSVR
 from sklearn.tree import DecisionTreeRegressor
 
@@ -24,8 +26,8 @@ results = OrderedDict()
 results['start_time'] = time.ctime()
 results['end_time'] = None
 
-data_source = DataSource(['bild', 'spiegelonline', 'ihre.sz'])
-transformer = Transformer('de')
+data_source = DataSource(['foxnews', 'nytimes', 'theguardian'])
+transformer = Transformer('en', make_pipeline(CountVectorizer(), TfidfTransformer()))
 print('Datasource', data_source.get_desc())
 
 
@@ -45,7 +47,7 @@ results['num_samples'] = transformer.get_num_rows()
 results['num_skipped'] = data_source.skip_counter
 results['reaction_count_mean'] = mean(data_source.absolute_reactions)
 results['reaction_count_stdev'] = stdev(data_source.absolute_reactions, results['reaction_count_mean'])
-results['feature_generator'] = transformer.desc
+results['feature_generator'] = transformer.get_desc()
 results['num_features'] = len(samples[0])
 print("Generated", results['num_features'], "features")
 
