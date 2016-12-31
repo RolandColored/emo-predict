@@ -1,7 +1,7 @@
 import re
 
 import spacy
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, strip_accents_ascii
+from sklearn.feature_extraction.text import strip_accents_ascii
 
 
 def _clean_text(text):
@@ -27,27 +27,18 @@ class Transformer:
         return len(self.rows)
 
     def get_desc(self):
-        return str(self.pipeline)
+        return '\n'.join([str(estimator) for _, estimator in self.pipeline.steps])
 
     def get_labels(self):
         return [row['labels'] for row in self.rows]
 
     def get_samples(self):
         documents = [_clean_text(row['text']) for row in self.rows]
-        return self.pipeline.fit_transform(documents).toarray()
+        return self.pipeline.fit_transform(documents)
 
     def get_title_message_glove(self):
         self.desc = "title+message glove vectors"
         return [(list(self._get_glove_vector(row['title'])) + list(self._get_glove_vector(row['message']))) for row in self.rows]
-
-    def get_bag_of_words_tfidf(self):
-        vectorizer = CountVectorizer(min_df=0.002, max_df=0.9, ngram_range=(1, 1))
-        tfidf = TfidfTransformer()
-        self.desc = str(vectorizer) + '\n' + str(tfidf)
-
-        data = vectorizer.fit_transform([_clean_text(row['text']) for row in self.rows])
-        data = tfidf.fit_transform(data)
-        return data.toarray()
 
     def _get_glove_vector(self, text):
         if self.nlp is None:

@@ -3,6 +3,7 @@ import time
 from collections import OrderedDict
 from statistics import mean, stdev
 
+from sklearn.decomposition import TruncatedSVD
 from sklearn.ensemble import AdaBoostRegressor
 from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.ensemble import GradientBoostingRegressor
@@ -26,8 +27,11 @@ results = OrderedDict()
 results['start_time'] = time.ctime()
 results['end_time'] = None
 
-data_source = DataSource(['foxnews', 'nytimes', 'theguardian'])
-transformer = Transformer('en', make_pipeline(CountVectorizer(), TfidfTransformer()))
+data_source = DataSource(['bild'])
+transformer = Transformer('en', make_pipeline(
+    CountVectorizer(min_df=0.002, max_df=0.9),
+    TfidfTransformer(),
+    TruncatedSVD(n_components=100)))
 print('Datasource', data_source.get_desc())
 
 
@@ -36,9 +40,9 @@ for row in data_source.next_row():
     transformer.process_row(row)
 print(transformer.get_num_rows(), "Samples processed")
 
-samples = transformer.get_bag_of_words_tfidf()
+samples = transformer.get_samples()
 labels = transformer.get_labels()
-print(transformer.desc)
+print(transformer.get_desc())
 
 
 # result data
@@ -50,7 +54,6 @@ results['reaction_count_stdev'] = stdev(data_source.absolute_reactions, results[
 results['feature_generator'] = transformer.get_desc()
 results['num_features'] = len(samples[0])
 print("Generated", results['num_features'], "features")
-
 
 # config
 regressor_list = [
