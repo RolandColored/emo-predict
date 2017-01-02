@@ -1,8 +1,3 @@
-import csv
-import time
-from collections import OrderedDict
-from statistics import mean, stdev
-
 from sklearn.decomposition import TruncatedSVD
 from sklearn.ensemble import AdaBoostRegressor
 from sklearn.ensemble import ExtraTreesRegressor
@@ -20,18 +15,16 @@ from sklearn.svm import NuSVR
 from sklearn.tree import DecisionTreeRegressor
 
 from datasource import DataSource
+from resultwriter import ResultWriter
 from transformer import Transformer
 
 # data
-results = OrderedDict()
-results['start_time'] = time.ctime()
-results['end_time'] = None
-
-data_source = DataSource(['bild'])
-transformer = Transformer('en', make_pipeline(
-    CountVectorizer(min_df=0.002, max_df=0.9),
+result_writer = ResultWriter()
+data_source = DataSource(['spiegelonline'])
+transformer = Transformer('de', make_pipeline(
+    CountVectorizer(min_df=1, max_df=0.9),
     TfidfTransformer(),
-    TruncatedSVD(n_components=100)))
+    TruncatedSVD(n_components=1000)))
 print('Datasource', data_source.get_desc())
 
 
@@ -42,18 +35,12 @@ print(transformer.get_num_rows(), "Samples processed")
 
 samples = transformer.get_samples()
 labels = transformer.get_labels()
+
+num_features = len(samples[0])
 print(transformer.get_desc())
+print("Generated", num_features, "features")
+result_writer.set_meta_data(data_source, transformer, num_features)
 
-
-# result data
-results['data_source'] = data_source.get_desc()
-results['num_samples'] = transformer.get_num_rows()
-results['num_skipped'] = data_source.skip_counter
-results['reaction_count_mean'] = mean(data_source.absolute_reactions)
-results['reaction_count_stdev'] = stdev(data_source.absolute_reactions, results['reaction_count_mean'])
-results['feature_generator'] = transformer.get_desc()
-results['num_features'] = len(samples[0])
-print("Generated", results['num_features'], "features")
 
 # config
 regressor_list = [
@@ -83,17 +70,7 @@ for regressor in regressor_list:
     else:
         regressor_name = regressor.__class__.__name__
 
-    results[regressor_name + '_score'] = scores.mean()
-    results[regressor_name + '_stdev'] = scores.std()
+    result_writer.add_result(regressor_name, scores.mean(), scores.std())
     print(regressor_name, 'Accuracy: %0.2f (+/- %0.2f)' % (scores.mean(), scores.std()))
 
-results['end_time'] = time.ctime()
-
-
-# write results
-with open('../results.csv', 'a') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=results.keys())
-
-    if csvfile.tell() == 0:
-        writer.writeheader()
-    writer.writerow(results)
+result_writer.write()
