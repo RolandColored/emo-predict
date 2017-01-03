@@ -3,7 +3,7 @@ from sklearn.ensemble import AdaBoostRegressor
 from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.linear_model import BayesianRidge
 from sklearn.linear_model import MultiTaskElasticNet
 from sklearn.linear_model import MultiTaskLasso
@@ -15,18 +15,19 @@ from sklearn.svm import NuSVR
 from sklearn.tree import DecisionTreeRegressor
 
 from datasource import DataSource
+from features.stemmedcountvectorizer import StemmedCountVectorizer
+from features.textextractor import TextExtractor
+from features.transformer import Transformer
 from resultwriter import ResultWriter
-from textextractor import TextExtractor
-from transformer import Transformer
 
 # data
 result_writer = ResultWriter()
 data_source = DataSource(['bild'])
-transformer = Transformer('de', make_pipeline(
+transformer = Transformer(data_source.get_lang(), make_pipeline(
     TextExtractor(column='text'),
-    CountVectorizer(min_df=1, max_df=0.9, strip_accents='ascii'),
+    StemmedCountVectorizer(lang=data_source.get_lang(), strip_accents='ascii', min_df=1, max_df=0.9),
     TfidfTransformer(),
-    TruncatedSVD(n_components=1000)
+    TruncatedSVD(n_components=100)
 ))
 print('Datasource', data_source.get_desc())
 
@@ -39,8 +40,8 @@ print(transformer.get_num_rows(), "Samples processed")
 samples = transformer.get_samples()
 labels = transformer.get_labels()
 
-# debug vocubalery
-# print(transformer.pipeline.steps[1][1].get_feature_names()); exit()
+# debug vocabulary
+#print(transformer.pipeline.steps[1][1].get_feature_names())
 
 num_features = len(samples[0])
 print(transformer.get_desc())

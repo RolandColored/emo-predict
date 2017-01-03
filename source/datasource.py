@@ -14,6 +14,11 @@ class DataSource:
     def get_desc(self):
         return '+'.join(self.filenames)
 
+    def get_lang(self):
+        if any(source in self.filenames for source in ['bild', 'ihre.sz', 'spiegelonline']):
+            return 'de'
+        return 'en'
+
     def next_row(self):
         for filename in self.filenames:
             with open('../articles/' + filename + '.csv') as csvFile:
