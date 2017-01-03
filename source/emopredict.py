@@ -27,11 +27,11 @@ transformer = Transformer(data_source.get_lang(), make_pipeline(
         ('text', make_pipeline(TextExtractor(column='text'),
             CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
             TfidfTransformer(),
-            TruncatedSVD(n_components=500))),
+            TruncatedSVD(n_components=1000))),
         ('title', make_pipeline(TextExtractor(column='title'),
             CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
             TfidfTransformer(),
-            TruncatedSVD(n_components=500))),
+            TruncatedSVD(n_components=1000))),
         ('message', make_pipeline(TextExtractor(column='message'),
             CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
             TfidfTransformer(),
@@ -72,14 +72,13 @@ regressor_list = [
 ]
 
 
-def get_regressor_name(regressor):
-    global regressor_name
-    if isinstance(regressor, MultiOutputRegressor):
-        regressor_name = regressor.estimator.__class__.__name__
-        if isinstance(regressor.estimator, NuSVR):
-            regressor_name += regressor.estimator.kernel
+def get_regressor_name(regressor_obj):
+    if isinstance(regressor_obj, MultiOutputRegressor):
+        regressor_name = regressor_obj.estimator.__class__.__name__
+        if isinstance(regressor_obj.estimator, NuSVR):
+            regressor_name += regressor_obj.estimator.kernel
     else:
-        regressor_name = regressor.__class__.__name__
+        regressor_name = regressor_obj.__class__.__name__
     return regressor_name
 
 
