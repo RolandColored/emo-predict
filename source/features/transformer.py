@@ -1,4 +1,5 @@
 import spacy
+from sklearn.pipeline import FeatureUnion
 
 
 class Transformer:
@@ -17,7 +18,12 @@ class Transformer:
         return len(self.rows)
 
     def get_desc(self):
-        return '\n'.join([str(estimator) for _, estimator in self.pipeline.steps])
+        steps = self.pipeline.steps
+        feature_union = steps[0][1]
+        if len(steps) == 1 and isinstance(feature_union, FeatureUnion):
+            steps = feature_union.transformer_list
+
+        return '\n'.join([str(estimator) for _, estimator in steps])
 
     def get_labels(self):
         return [row['labels'] for row in self.rows]
