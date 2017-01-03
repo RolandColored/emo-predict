@@ -16,15 +16,18 @@ from sklearn.tree import DecisionTreeRegressor
 
 from datasource import DataSource
 from resultwriter import ResultWriter
+from textextractor import TextExtractor
 from transformer import Transformer
 
 # data
 result_writer = ResultWriter()
-data_source = DataSource(['spiegelonline'])
+data_source = DataSource(['bild'])
 transformer = Transformer('de', make_pipeline(
-    CountVectorizer(min_df=1, max_df=0.9),
+    TextExtractor(column='text'),
+    CountVectorizer(min_df=1, max_df=0.9, strip_accents='ascii'),
     TfidfTransformer(),
-    TruncatedSVD(n_components=1000)))
+    TruncatedSVD(n_components=1000)
+))
 print('Datasource', data_source.get_desc())
 
 
@@ -35,6 +38,9 @@ print(transformer.get_num_rows(), "Samples processed")
 
 samples = transformer.get_samples()
 labels = transformer.get_labels()
+
+# debug vocubalery
+# print(transformer.pipeline.steps[1][1].get_feature_names()); exit()
 
 num_features = len(samples[0])
 print(transformer.get_desc())

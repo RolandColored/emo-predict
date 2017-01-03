@@ -1,14 +1,4 @@
-import re
-
 import spacy
-from sklearn.feature_extraction.text import strip_accents_ascii
-
-
-def _clean_text(text):
-    text = strip_accents_ascii(text)
-    text = text.replace('"', '')
-    text = re.sub(r'(\([0-9]*\))', '', text)
-    return text
 
 
 class Transformer:
@@ -33,8 +23,7 @@ class Transformer:
         return [row['labels'] for row in self.rows]
 
     def get_samples(self):
-        documents = [_clean_text(row['text']) for row in self.rows]
-        return self.pipeline.fit_transform(documents)
+        return self.pipeline.fit_transform(self.rows)
 
     def get_title_message_glove(self):
         self.desc = "title+message glove vectors"
