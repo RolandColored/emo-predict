@@ -1,11 +1,8 @@
-import spacy
 from sklearn.pipeline import FeatureUnion
 
 
 class Transformer:
-    desc = '?'
     rows = []
-    nlp = None
 
     def __init__(self, lang, pipeline):
         self.lang = lang
@@ -31,11 +28,3 @@ class Transformer:
     def get_samples(self):
         return self.pipeline.fit_transform(self.rows)
 
-    def get_title_message_glove(self):
-        self.desc = "title+message glove vectors"
-        return [(list(self._get_glove_vector(row['title'])) + list(self._get_glove_vector(row['message']))) for row in self.rows]
-
-    def _get_glove_vector(self, text):
-        if self.nlp is None:
-            self.nlp = spacy.load(self.lang)
-        return self.nlp(text).vector

@@ -15,6 +15,7 @@ from sklearn.svm import NuSVR
 from sklearn.tree import DecisionTreeRegressor
 
 from datasource import DataSource
+from features.glovevectorizer import GloveVectorizer
 from features.textextractor import TextExtractor
 from features.transformer import Transformer
 from resultwriter import ResultWriter
@@ -29,13 +30,9 @@ transformer = Transformer(data_source.get_lang(), make_pipeline(
             TfidfTransformer(),
             TruncatedSVD(n_components=1000))),
         ('title', make_pipeline(TextExtractor(column='title'),
-            CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
-            TfidfTransformer(),
-            TruncatedSVD(n_components=1000))),
+            GloveVectorizer(lang=data_source.get_lang()))),
         ('message', make_pipeline(TextExtractor(column='message'),
-            CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
-            TfidfTransformer(),
-            TruncatedSVD(n_components=1000))),
+            GloveVectorizer(lang=data_source.get_lang()))),
     ])
 ))
 print('Datasource', data_source.get_desc())
