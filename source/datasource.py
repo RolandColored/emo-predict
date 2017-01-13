@@ -36,8 +36,11 @@ class DataSource:
         reaction_count = sum(reactions)
         self.absolute_reactions.append(reaction_count)
 
-        if reaction_count > 50:
+        if reaction_count <= 50:
+            self.skip_counter += 1
+        elif row['text'] == '':
+            self.skip_counter += 1
+        else:
             row['labels'] = [value / reaction_count for value in reactions]
             self.rows.append(row)
-        else:
-            self.skip_counter += 1
+

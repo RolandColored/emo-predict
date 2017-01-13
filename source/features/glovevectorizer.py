@@ -5,7 +5,7 @@ from sklearn.base import BaseEstimator
 class GloveVectorizer(BaseEstimator):
 
     def __init__(self, lang):
-        self.nlp = spacy.load(lang)
+        self.nlp = spacy.load(lang, parser=False)
 
     def fit(self, X, y=None):
         return self
