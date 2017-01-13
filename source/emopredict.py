@@ -1,21 +1,18 @@
-from sklearn.decomposition import TruncatedSVD
 from sklearn.ensemble import AdaBoostRegressor
 from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer
 from sklearn.linear_model import BayesianRidge
 from sklearn.linear_model import MultiTaskElasticNet
 from sklearn.linear_model import MultiTaskLasso
 from sklearn.model_selection import cross_val_score
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.neighbors import KNeighborsRegressor
-from sklearn.pipeline import make_pipeline, FeatureUnion
 from sklearn.svm import NuSVR
 from sklearn.tree import DecisionTreeRegressor
 
 from datasource import DataSource
-from features.textextractor import TextExtractor
+from features.pipelineconfig import PipelineConfig
 from features.transformer import Transformer
 from resultwriter import ResultWriter
 
@@ -23,15 +20,7 @@ from resultwriter import ResultWriter
 result_writer = ResultWriter()
 data_source = DataSource(['foxnews'])
 print(data_source.get_num_rows(), "Samples processed")
-
-transformer = Transformer(data_source, make_pipeline(
-    FeatureUnion([
-        ('text', make_pipeline(TextExtractor(column='text'),
-            CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
-            TfidfTransformer(),
-            TruncatedSVD(n_components=1000))),
-    ])
-))
+transformer = Transformer(data_source, PipelineConfig.text_bow())
 print('Datasource', data_source.get_desc())
 
 
