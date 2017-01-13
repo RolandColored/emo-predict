@@ -10,5 +10,8 @@ class TextExtractor(BaseEstimator):
         return self
 
     def transform(self, X):
-        return [row[self.column] for row in X]
+        return [self._pre_process_text(row[self.column]) for row in X]
+
+    def _pre_process_text(self, text):
+        return text
 

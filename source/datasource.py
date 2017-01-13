@@ -7,9 +7,11 @@ class DataSource:
 
     skip_counter = 0
     absolute_reactions = []
+    rows = []
 
     def __init__(self, filenames):
         self.filenames = filenames
+        self._read_files()
 
     def get_desc(self):
         return '+'.join(self.filenames)
@@ -19,17 +21,23 @@ class DataSource:
             return 'de'
         return 'en'
 
-    def next_row(self):
+    def get_num_rows(self):
+        return len(self.rows)
+
+    def _read_files(self):
         for filename in self.filenames:
             with open('../articles/' + filename + '.csv') as csvFile:
                 reader = csv.DictReader(csvFile)
                 for row in reader:
-                    reactions = [int(row[key]) for key in reaction_types]
-                    reaction_count = sum(reactions)
-                    self.absolute_reactions.append(reaction_count)
+                    self._read_row(row)
 
-                    if reaction_count > 50:
-                        row['labels'] = [value / reaction_count for value in reactions]
-                        yield row
-                    else:
-                        self.skip_counter += 1
+    def _read_row(self, row):
+        reactions = [int(row[key]) for key in reaction_types]
+        reaction_count = sum(reactions)
+        self.absolute_reactions.append(reaction_count)
+
+        if reaction_count > 50:
+            row['labels'] = [value / reaction_count for value in reactions]
+            self.rows.append(row)
+        else:
+            self.skip_counter += 1

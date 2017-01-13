@@ -14,7 +14,7 @@ class ResultWriter:
 
     def set_meta_data(self, data_source, transformer, num_features):
         self.results['data_source'] = data_source.get_desc()
-        self.results['num_samples'] = transformer.get_num_rows()
+        self.results['num_samples'] = data_source.get_num_rows()
         self.results['num_skipped'] = data_source.skip_counter
         self.results['reaction_count_mean'] = mean(data_source.absolute_reactions)
         self.results['reaction_count_stdev'] = stdev(data_source.absolute_reactions, self.results['reaction_count_mean'])

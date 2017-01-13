@@ -15,35 +15,28 @@ from sklearn.svm import NuSVR
 from sklearn.tree import DecisionTreeRegressor
 
 from datasource import DataSource
-from features.glovevectorizer import GloveVectorizer
 from features.textextractor import TextExtractor
 from features.transformer import Transformer
 from resultwriter import ResultWriter
 
 # data
 result_writer = ResultWriter()
-data_source = DataSource(['bild'])
-transformer = Transformer(data_source.get_lang(), make_pipeline(
+data_source = DataSource(['foxnews'])
+print(data_source.get_num_rows(), "Samples processed")
+
+transformer = Transformer(data_source, make_pipeline(
     FeatureUnion([
         ('text', make_pipeline(TextExtractor(column='text'),
             CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
             TfidfTransformer(),
             TruncatedSVD(n_components=1000))),
-        ('title', make_pipeline(TextExtractor(column='title'),
-            GloveVectorizer(lang=data_source.get_lang()))),
-        ('message', make_pipeline(TextExtractor(column='message'),
-            GloveVectorizer(lang=data_source.get_lang()))),
     ])
 ))
 print('Datasource', data_source.get_desc())
 
 
 # feature generation
-for row in data_source.next_row():
-    transformer.process_row(row)
-print(transformer.get_num_rows(), "Samples processed")
 print(transformer.get_desc())
-
 samples = transformer.get_samples()
 labels = transformer.get_labels()
 
