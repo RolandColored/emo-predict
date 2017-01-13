@@ -21,3 +21,6 @@ class Transformer:
     def get_samples(self):
         return self.pipeline.fit_transform(self.data_source.rows)
 
+    def debug_alphabet(self):
+        print(self.pipeline.named_steps['countvectorizer'].get_feature_names())
+
