@@ -12,19 +12,19 @@ from features.textextractor import TextExtractor
 class PipelineConfig:
 
     @staticmethod
-    def text_bow_plain():
+    def text_bow_plain(lang):
         return make_pipeline(TextExtractor(column='text'),
                              CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9))
 
     @staticmethod
-    def text_bow():
+    def text_bow(lang):
         return make_pipeline(TextExtractor(column='text'),
                              CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
                              TfidfTransformer(),
                              TruncatedSVD(n_components=1000))
 
     @staticmethod
-    def text_and_title_and_message_bow():
+    def text_and_title_and_message_bow(lang):
         return make_pipeline(FeatureUnion([
             ('text', make_pipeline(TextExtractor(column='text'),
                                    CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
@@ -54,7 +54,7 @@ class PipelineConfig:
         ]))
 
     @staticmethod
-    def text_avg_setence_length():
+    def text_avg_setence_length(lang):
         return make_pipeline(TextExtractor(column='text'),
                              SentenceLength(),
                              StandardScaler())

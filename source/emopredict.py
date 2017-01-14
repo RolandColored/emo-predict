@@ -1,26 +1,22 @@
-from sklearn.ensemble import AdaBoostRegressor
-from sklearn.ensemble import ExtraTreesRegressor
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import BayesianRidge
-from sklearn.linear_model import MultiTaskElasticNet
-from sklearn.linear_model import MultiTaskLasso
+import sys
+
 from sklearn.model_selection import cross_val_score
 from sklearn.multioutput import MultiOutputRegressor
-from sklearn.neighbors import KNeighborsRegressor
 from sklearn.svm import NuSVR
-from sklearn.tree import DecisionTreeRegressor
 
+from config.pipelineconfig import PipelineConfig
+from config.regressors import regressor_list
 from datasource import DataSource
-from features.pipelineconfig import PipelineConfig
 from features.transformer import Transformer
 from resultwriter import ResultWriter
 
-# data
+# parameters: emopredict.py datasource1+datasource2+... pipeline
 result_writer = ResultWriter()
-data_source = DataSource(['foxnews'])
+data_source = DataSource(sys.argv[1].split('+'))
 print(data_source.get_num_rows(), "Samples processed")
-transformer = Transformer(data_source, PipelineConfig.text_bow())
+
+pipeline = getattr(PipelineConfig, sys.argv[2])(data_source.get_lang())
+transformer = Transformer(data_source, pipeline)
 print('Datasource', data_source.get_desc())
 
 
@@ -35,22 +31,6 @@ result_writer.set_meta_data(data_source, transformer, num_features)
 
 
 # config
-regressor_list = [
-    DecisionTreeRegressor(),
-    RandomForestRegressor(),
-    KNeighborsRegressor(),
-    MultiTaskLasso(),
-    MultiTaskElasticNet(),
-    MultiOutputRegressor(BayesianRidge()),
-    MultiOutputRegressor(GradientBoostingRegressor()),
-    MultiOutputRegressor(NuSVR(kernel='rbf')),
-    MultiOutputRegressor(NuSVR(kernel='poly')),
-    MultiOutputRegressor(NuSVR(kernel='sigmoid')),
-    ExtraTreesRegressor(),
-    MultiOutputRegressor(AdaBoostRegressor()),
-]
-
-
 def get_regressor_name(regressor_obj):
     if isinstance(regressor_obj, MultiOutputRegressor):
         regressor_name = regressor_obj.estimator.__class__.__name__
