@@ -16,7 +16,7 @@ print(data_source.get_num_rows(), "Samples processed")
 pipeline = getattr(PipelineConfig, sys.argv[2])(data_source.get_lang())
 transformer = Transformer(data_source, pipeline)
 print('Datasource', data_source.get_desc())
-n_jobs = sys.argv[3]
+n_jobs = int(sys.argv[3])
 
 # feature generation
 print(transformer.get_desc())
