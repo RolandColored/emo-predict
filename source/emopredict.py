@@ -1,11 +1,9 @@
 import sys
 
 from sklearn.model_selection import cross_val_score
-from sklearn.multioutput import MultiOutputRegressor
-from sklearn.svm import NuSVR
 
 from config.pipelineconfig import PipelineConfig
-from config.regressors import regressor_list
+from config.regressors import regressor_list, get_regressor_name
 from datasource import DataSource
 from features.transformer import Transformer
 from resultwriter import ResultWriter
@@ -24,21 +22,10 @@ print('Datasource', data_source.get_desc())
 print(transformer.get_desc())
 samples = transformer.get_samples()
 labels = transformer.get_labels()
-
+print(samples)
 num_features = len(samples[0])
-print("Generated", num_features, "features")
+print("Generated", num_features, "feature dimensions")
 result_writer.set_meta_data(data_source, transformer, num_features)
-
-
-# config
-def get_regressor_name(regressor_obj):
-    if isinstance(regressor_obj, MultiOutputRegressor):
-        regressor_name = regressor_obj.estimator.__class__.__name__
-        if isinstance(regressor_obj.estimator, NuSVR):
-            regressor_name += regressor_obj.estimator.kernel
-    else:
-        regressor_name = regressor_obj.__class__.__name__
-    return regressor_name
 
 
 # evaluate

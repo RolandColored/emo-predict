@@ -25,3 +25,13 @@ regressor_list = [
     ExtraTreesRegressor(),
     MultiOutputRegressor(AdaBoostRegressor()),
 ]
+
+# helper function
+def get_regressor_name(regressor_obj):
+    if isinstance(regressor_obj, MultiOutputRegressor):
+        regressor_name = regressor_obj.estimator.__class__.__name__
+        if isinstance(regressor_obj.estimator, NuSVR):
+            regressor_name += regressor_obj.estimator.kernel
+    else:
+        regressor_name = regressor_obj.__class__.__name__
+    return regressor_name

@@ -1,10 +1,12 @@
 from sklearn.decomposition import TruncatedSVD
+from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.pipeline import FeatureUnion, make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 from features.glovevectorizer import GloveVectorizer
+from features.posdistribution import PosDistribution
 from features.sentencelength import SentenceLength
 from features.textextractor import TextExtractor
 
@@ -54,8 +56,14 @@ class PipelineConfig:
         ]))
 
     @staticmethod
-    def text_avg_setence_length(lang):
+    def text_sent(lang):
         return make_pipeline(TextExtractor(column='text'),
                              SentenceLength(),
                              StandardScaler())
 
+    @staticmethod
+    def text_pos(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             PosDistribution(lang),
+                             DictVectorizer(),
+                             StandardScaler())
