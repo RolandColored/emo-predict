@@ -28,9 +28,16 @@ class PipelineConfig:
     @staticmethod
     def text_bigram_bow(lang):
         return make_pipeline(TextExtractor(column='text'),
+                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2)),
+                             TfidfTransformer(),
+                             TruncatedSVD(n_components=500))
+
+    @staticmethod
+    def title_bigram_bow(lang):
+        return make_pipeline(TextExtractor(column='title'),
                              CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9, ngram_range=(2, 2)),
                              TfidfTransformer(),
-                             TruncatedSVD(n_components=1000))
+                             TruncatedSVD(n_components=500))
 
     @staticmethod
     def text_and_title_and_message_bow(lang):
