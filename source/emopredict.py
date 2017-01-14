@@ -22,7 +22,7 @@ n_jobs = int(sys.argv[3])
 print(transformer.get_desc())
 samples = transformer.get_samples()
 labels = transformer.get_labels()
-print(samples)
+
 num_features = len(samples[0])
 print("Generated", num_features, "feature dimensions")
 result_writer.set_meta_data(data_source, transformer, num_features)
