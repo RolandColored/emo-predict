@@ -65,5 +65,5 @@ class PipelineConfig:
     def text_pos(lang):
         return make_pipeline(TextExtractor(column='text'),
                              PosDistribution(lang),
-                             DictVectorizer(),
+                             DictVectorizer(sparse=False),
                              StandardScaler())

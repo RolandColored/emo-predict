@@ -8,7 +8,7 @@ from datasource import DataSource
 from features.transformer import Transformer
 from resultwriter import ResultWriter
 
-# parameters: emopredict.py datasource1+datasource2+... pipeline
+# parameters: emopredict.py datasource1+datasource2+... pipeline n_jobs
 result_writer = ResultWriter()
 data_source = DataSource(sys.argv[1].split('+'))
 print(data_source.get_num_rows(), "Samples processed")
@@ -16,7 +16,7 @@ print(data_source.get_num_rows(), "Samples processed")
 pipeline = getattr(PipelineConfig, sys.argv[2])(data_source.get_lang())
 transformer = Transformer(data_source, pipeline)
 print('Datasource', data_source.get_desc())
-
+n_jobs = sys.argv[3]
 
 # feature generation
 print(transformer.get_desc())
@@ -30,7 +30,7 @@ result_writer.set_meta_data(data_source, transformer, num_features)
 
 # evaluate
 for regressor in regressor_list:
-    scores = cross_val_score(regressor, samples, labels)
+    scores = cross_val_score(regressor, samples, labels, n_jobs=n_jobs)
     regressor_name = get_regressor_name(regressor)
 
     result_writer.add_result(regressor_name, scores.mean(), scores.std())
