@@ -1,3 +1,6 @@
+from sklearn.pipeline import FeatureUnion
+
+
 class Transformer:
 
     def __init__(self, data_source, pipeline):
@@ -6,9 +9,8 @@ class Transformer:
 
     def get_desc(self):
         steps = self.pipeline.steps
-        feature_union = self.pipeline.named_steps['featureunion']
-        if feature_union is not None:
-            steps = feature_union.transformer_list
+        if 'featureunion' in self.pipeline.named_steps:
+            steps = self.pipeline.named_steps['featureunion'].transformer_list
 
         return '\n'.join([str(estimator) for _, estimator in steps])
 
