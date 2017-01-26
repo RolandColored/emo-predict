@@ -6,6 +6,7 @@ from sklearn.pipeline import FeatureUnion, make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 from features.glovevectorizer import GloveVectorizer
+from features.nrcemolex import NRCEmoLex
 from features.posdistribution import PosDistribution
 from features.sentencelength import SentenceLength
 from features.textextractor import TextExtractor
@@ -73,6 +74,13 @@ class PipelineConfig:
             ('message', make_pipeline(TextExtractor(column='message'),
                                       GloveVectorizer(lang=lang))),
         ]))
+
+    @staticmethod
+    def text_emolex(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             NRCEmoLex(lang),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
 
     @staticmethod
     def text_sent(lang):

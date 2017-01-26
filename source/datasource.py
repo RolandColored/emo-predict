@@ -26,8 +26,8 @@ class DataSource:
 
     def _read_files(self):
         for filename in self.filenames:
-            with open('../articles/' + filename + '.csv') as csvFile:
-                reader = csv.DictReader(csvFile)
+            with open('../articles/' + filename + '.csv') as csv_file:
+                reader = csv.DictReader(csv_file)
                 for row in reader:
                     self._read_row(row)
 
@@ -43,4 +43,3 @@ class DataSource:
         else:
             row['labels'] = [value / reaction_count for value in reactions]
             self.rows.append(row)
-
