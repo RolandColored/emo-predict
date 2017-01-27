@@ -5,3 +5,4 @@ scrapy
 spacy
 nltk
 py_lex
+textacy

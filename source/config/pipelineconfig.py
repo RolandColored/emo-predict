@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from features.glovevectorizer import GloveVectorizer
 from features.nrcemolex import NRCEmoLex
 from features.posdistribution import PosDistribution
+from features.readability import Readability
 from features.sentencelength import SentenceLength
 from features.textextractor import TextExtractor
 
@@ -79,6 +80,13 @@ class PipelineConfig:
     def text_emolex(lang):
         return make_pipeline(TextExtractor(column='text'),
                              NRCEmoLex(lang),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
+
+    @staticmethod
+    def text_readability(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             Readability(),
                              DictVectorizer(sparse=False),
                              StandardScaler())
 
