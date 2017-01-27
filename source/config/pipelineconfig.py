@@ -5,6 +5,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.pipeline import FeatureUnion, make_pipeline
 from sklearn.preprocessing import StandardScaler
 
+from features.depechemood import DepecheMood
 from features.glovevectorizer import GloveVectorizer
 from features.nrcemolex import NRCEmoLex
 from features.posdistribution import PosDistribution
@@ -66,10 +67,7 @@ class PipelineConfig:
     @staticmethod
     def text_bow_title_and_message_glove(lang):
         return make_pipeline(FeatureUnion([
-            ('text', make_pipeline(TextExtractor(column='text'),
-                                   CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
-                                   TfidfTransformer(),
-                                   TruncatedSVD(n_components=1000))),
+            ('text', PipelineConfig.text_bow(lang)),
             ('title', make_pipeline(TextExtractor(column='title'),
                                     GloveVectorizer(lang=lang))),
             ('message', make_pipeline(TextExtractor(column='message'),
@@ -80,6 +78,13 @@ class PipelineConfig:
     def text_emolex(lang):
         return make_pipeline(TextExtractor(column='text'),
                              NRCEmoLex(lang),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
+
+    @staticmethod
+    def text_depechemood(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             DepecheMood(),
                              DictVectorizer(sparse=False),
                              StandardScaler())
 
@@ -102,3 +107,29 @@ class PipelineConfig:
                              PosDistribution(lang),
                              DictVectorizer(sparse=False),
                              StandardScaler())
+
+    @staticmethod
+    def text_multiple_en(lang):
+        return make_pipeline(FeatureUnion([
+            ('text_pos', PipelineConfig.text_pos(lang)),
+            ('text_readability', PipelineConfig.text_readability(lang)),
+            ('text_depechemood', PipelineConfig.text_depechemood(lang)),
+            ('text_emolex', PipelineConfig.text_emolex(lang)),
+            ('text_sent', PipelineConfig.text_sent(lang)),
+            ('text_bow', make_pipeline(TextExtractor(column='text'),
+                                       CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
+                                       TfidfTransformer(),
+                                       TruncatedSVD(n_components=500)))
+        ]))
+
+    @staticmethod
+    def text_multiple(lang):
+        return make_pipeline(FeatureUnion([
+            ('text_pos', PipelineConfig.text_pos(lang)),
+            ('text_emolex', PipelineConfig.text_emolex(lang)),
+            ('text_sent', PipelineConfig.text_sent(lang)),
+            ('text_bow', make_pipeline(TextExtractor(column='text'),
+                                       CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
+                                       TfidfTransformer(),
+                                       TruncatedSVD(n_components=500)))
+        ], transformer_weights={'text_bow': 0.5, 'text_emolex': 0.3, 'text_pos': 0.15, 'text_sent': 0.05}))
