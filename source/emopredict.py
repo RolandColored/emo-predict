@@ -9,14 +9,17 @@ from features.transformer import Transformer
 from resultwriter import ResultWriter
 
 # parameters: emopredict.py datasource1+datasource2+... pipeline n_jobs
+data_source_names = sys.argv[1].split('+')
+pipeline_name = sys.argv[2]
+n_jobs = int(sys.argv[3])
+
 result_writer = ResultWriter()
-data_source = DataSource(sys.argv[1].split('+'))
+data_source = DataSource(data_source_names)
 print(data_source.get_num_rows(), "Samples processed")
 
-pipeline = getattr(PipelineConfig, sys.argv[2])(data_source.get_lang())
-transformer = Transformer(data_source, pipeline)
+pipeline = getattr(PipelineConfig, pipeline_name)(data_source.get_lang())
+transformer = Transformer(data_source, pipeline, pipeline_name)
 print('Datasource', data_source.get_desc())
-n_jobs = int(sys.argv[3])
 
 # feature generation
 print(transformer.get_desc())

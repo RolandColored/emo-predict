@@ -1,11 +1,9 @@
-from sklearn.pipeline import FeatureUnion
-
-
 class Transformer:
 
-    def __init__(self, data_source, pipeline):
+    def __init__(self, data_source, pipeline, name):
         self.data_source = data_source
         self.pipeline = pipeline
+        self.name = name
 
     def get_desc(self):
         steps = self.pipeline.steps
@@ -13,6 +11,9 @@ class Transformer:
             steps = self.pipeline.named_steps['featureunion'].transformer_list
 
         return '\n'.join([str(estimator) for _, estimator in steps])
+
+    def get_name(self):
+        return self.name
 
     def get_labels(self):
         return [row['labels'] for row in self.data_source.rows]

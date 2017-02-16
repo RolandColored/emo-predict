@@ -18,7 +18,7 @@ class ResultWriter:
         self.results['num_skipped'] = data_source.skip_counter
         self.results['reaction_count_mean'] = mean(data_source.absolute_reactions)
         self.results['reaction_count_stdev'] = stdev(data_source.absolute_reactions, self.results['reaction_count_mean'])
-        self.results['feature_generator'] = transformer.get_desc()
+        self.results['feature_generator'] = transformer.get_name()
         self.results['num_features'] = num_features
 
     def add_result(self, regressor_name, score, stdev):
