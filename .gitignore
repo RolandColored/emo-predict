@@ -95,3 +95,4 @@ ENV/
 /*/*.csv
 /source/resources/*.txt
 /source/resources/*/*.txt
+/source/resources/NRC-emotion-lexicon-wordlevel-alphabetized-en.txt.sample

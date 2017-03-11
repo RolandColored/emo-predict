@@ -21,7 +21,28 @@ class PipelineConfig:
                              CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9))
 
     @staticmethod
-    def text_bow(lang):
+    def text_bow_100(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
+                             TfidfTransformer(),
+                             TruncatedSVD(n_components=100))
+
+    @staticmethod
+    def text_bow_250(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
+                             TfidfTransformer(),
+                             TruncatedSVD(n_components=250))
+
+    @staticmethod
+    def text_bow_500(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
+                             TfidfTransformer(),
+                             TruncatedSVD(n_components=500))
+
+    @staticmethod
+    def text_bow_1000(lang):
         return make_pipeline(TextExtractor(column='text'),
                              CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
                              TfidfTransformer(),
@@ -62,6 +83,15 @@ class PipelineConfig:
                                       CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
                                       TfidfTransformer(),
                                       TruncatedSVD(n_components=300))),
+        ]))
+
+    @staticmethod
+    def title_and_message_glove(lang):
+        return make_pipeline(FeatureUnion([
+            ('title', make_pipeline(TextExtractor(column='title'),
+                                    GloveVectorizer(lang=lang))),
+            ('message', make_pipeline(TextExtractor(column='message'),
+                                      GloveVectorizer(lang=lang))),
         ]))
 
     @staticmethod
