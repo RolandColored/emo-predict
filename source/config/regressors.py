@@ -14,6 +14,12 @@ from sklearn.tree import DecisionTreeRegressor
 
 
 regressor_list = [
+    Ridge(),
+    KernelRidge(kernel='linear'),
+    KernelRidge(kernel='rbf'),
+    KernelRidge(kernel='poly'),
+    KernelRidge(kernel='sigmoid'),
+    MultiOutputRegressor(BayesianRidge()),
     DecisionTreeRegressor(),
     RandomForestRegressor(),
     ExtraTreesRegressor(),
@@ -25,12 +31,6 @@ regressor_list = [
     MultiOutputRegressor(NuSVR(kernel='rbf')),
     MultiOutputRegressor(NuSVR(kernel='poly')),
     MultiOutputRegressor(NuSVR(kernel='sigmoid')),
-    Ridge(),
-    KernelRidge(kernel='linear'),
-    KernelRidge(kernel='rbf'),
-    KernelRidge(kernel='poly'),
-    KernelRidge(kernel='sigmoid'),
-    MultiOutputRegressor(BayesianRidge()),
 ]
 
 
@@ -45,3 +45,9 @@ def get_regressor_name(regressor_obj):
     else:
         regressor_name = regressor_obj.__class__.__name__
     return regressor_name
+
+
+def get_n_jobs(regressor_name, max_n_jobs):
+    if "Ridge" in regressor_name:
+        return 1
+    return max_n_jobs
