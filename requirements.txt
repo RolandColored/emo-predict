@@ -6,3 +6,5 @@ spacy
 nltk
 py_lex
 textacy
+matplotlib
+pandas

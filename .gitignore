@@ -92,7 +92,6 @@ ENV/
 .ropeproject
 
 # Data
-/*/*.csv
-/source/resources/*.txt
-/source/resources/*/*.txt
-/source/resources/NRC-emotion-lexicon-wordlevel-alphabetized-en.txt.sample
+/articles/*.csv
+/fb-data/*.csv
+/source/resources/*

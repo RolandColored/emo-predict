@@ -22,7 +22,7 @@ class ResultWriter:
         self.results['num_features'] = num_features
 
     def add_result(self, regressor_name, score, stdev):
-        self.results[regressor_name + '_score'] = score
+        self.results[regressor_name + '_error'] = score
         self.results[regressor_name + '_stdev'] = stdev
 
     def write(self):
