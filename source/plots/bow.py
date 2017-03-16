@@ -9,6 +9,7 @@ plt.style.use('ggplot')
 
 # plot
 df = pd.read_csv('../../results/bow.csv', index_col='feature_generator')
+df = df[df['data_source'].str.contains('foxnews')]
 
 linestyles = ['-', '--', ':']
 i = 0
@@ -27,5 +28,5 @@ frame.set_edgecolor('white')
 plt.ylabel('RMSE')
 plt.xlabel('Anzahl Dimensionen')
 #plt.show()
-plt.savefig('bow.pdf', format='pdf', bbox_extra_artists=(lgd,), bbox_inches='tight')
+plt.savefig('bow_en.pdf', format='pdf', bbox_extra_artists=(lgd,), bbox_inches='tight')
 
