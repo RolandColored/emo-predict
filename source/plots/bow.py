@@ -27,6 +27,6 @@ frame.set_edgecolor('white')
 # labels
 plt.ylabel('RMSE')
 plt.xlabel('Anzahl Dimensionen')
-#plt.show()
+plt.xticks([100, 250, 500, 1000])
 plt.savefig('bow_en.pdf', format='pdf', bbox_extra_artists=(lgd,), bbox_inches='tight')
 
