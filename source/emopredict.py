@@ -1,22 +1,26 @@
+import os
 import sys
 
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import cross_val_score
 
 from config.pipelineconfig import PipelineConfig
-from config.regressors import regressor_list, get_regressor_name, get_n_jobs
+from config.regressors import regressors_dict
 from features.transformer import Transformer
 from utils.datasource import DataSource
 from utils.metrics import root_mean_squared_error
 from utils.resultwriter import ResultWriter
 
-# parameters: emopredict.py datasource1+datasource2+... pipeline n_jobs
+# parameters: emopredict.py datasource1+datasource2+... pipeline regressor outputdir
 data_source_names = sys.argv[1].split('+')
 pipeline_name = sys.argv[2]
-n_jobs = int(sys.argv[3])
+regressor_name = sys.argv[3]
+output_dir = sys.argv[4]
 
-result_writer = ResultWriter()
+# setup
+source_dir = os.path.dirname(__file__)
 data_source = DataSource(data_source_names)
+result_writer = ResultWriter(output_dir + '/' + data_source.get_lang() + '_' + pipeline_name + '_' + regressor_name + '.csv')
 print(data_source.get_num_rows(), "Samples processed")
 
 pipeline = getattr(PipelineConfig, pipeline_name)(data_source.get_lang())
@@ -31,16 +35,16 @@ labels = transformer.get_labels()
 
 num_features = len(samples[0])
 print("Generated", num_features, "feature dimensions")
-result_writer.set_meta_data(data_source, transformer, num_features)
+result_writer.set_meta_data(data_source, transformer, regressor_name, num_features)
 
 
 # evaluate
-for regressor in regressor_list:
-    regressor_name = get_regressor_name(regressor)
-    scores = cross_val_score(regressor, samples, labels, n_jobs=get_n_jobs(regressor_name, n_jobs),
-                             cv=10, scoring=make_scorer(root_mean_squared_error))
+#scorer = make_scorer(error_logger, results_sink=RawDataWriter())
+scorer = make_scorer(root_mean_squared_error)
+regressor = regressors_dict[regressor_name]
+scores = cross_val_score(regressor, samples, labels, cv=10, scoring=scorer)
 
-    result_writer.add_result(regressor_name, scores.mean(), scores.std())
-    print(regressor_name, 'Accuracy: %0.4f (+/- %0.4f)' % (scores.mean(), scores.std()))
+result_writer.add_result(scores.mean(), scores.std())
+print(regressor_name, 'Accuracy: %0.4f (+/- %0.4f)' % (scores.mean(), scores.std()))
 
 result_writer.write()

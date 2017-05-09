@@ -9,4 +9,4 @@ for file in glob.glob("../../fb-data/*.csv"):
     df = df.drop(['link', 'message', 'date'], axis=1)
     df_all = df_all.append(df)
 
-print(df_all.corr().to_latex())
+print(df_all.corr().to_latex(float_format='%11.3f'))
