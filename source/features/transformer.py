@@ -1,5 +1,7 @@
-class Transformer:
+from sklearn.model_selection import train_test_split
 
+
+class Transformer:
     def __init__(self, data_source, pipeline, name):
         self.data_source = data_source
         self.pipeline = pipeline
@@ -21,6 +23,8 @@ class Transformer:
     def get_samples(self):
         return self.pipeline.fit_transform(self.data_source.rows)
 
+    def get_train_test_split(self):
+        return train_test_split(self.get_samples(), self.get_labels(), test_size=0.2, random_state=42)
+
     def debug_alphabet(self):
         print(self.pipeline.named_steps['countvectorizer'].get_feature_names())
-

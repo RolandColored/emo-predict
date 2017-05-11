@@ -2,7 +2,6 @@ import os
 import sys
 
 from sklearn.metrics import make_scorer
-from sklearn.model_selection import cross_val_score
 
 from config.pipelineconfig import PipelineConfig
 from config.regressors import regressors_dict
@@ -30,21 +29,21 @@ print('Datasource', data_source.get_desc())
 
 # feature generation
 print(transformer.get_desc())
-samples = transformer.get_samples()
-labels = transformer.get_labels()
+X_train, X_test, y_train, y_test = transformer.get_train_test_split()
 
-num_features = len(samples[0])
+num_features = len(X_train[0])
 print("Generated", num_features, "feature dimensions")
 result_writer.set_meta_data(data_source, transformer, regressor_name, num_features)
 
 
 # evaluate
-#scorer = make_scorer(error_logger, results_sink=RawDataWriter())
+# scorer = make_scorer(error_logger, results_sink=RawDataWriter())
 scorer = make_scorer(root_mean_squared_error)
 regressor = regressors_dict[regressor_name]
-scores = cross_val_score(regressor, samples, labels, cv=10, scoring=scorer)
+regressor.fit(X_train, y_train)
+score = root_mean_squared_error(y_test, regressor.predict(X_test))
 
-result_writer.add_result(scores.mean(), scores.std())
-print(regressor_name, 'Accuracy: %0.4f (+/- %0.4f)' % (scores.mean(), scores.std()))
+result_writer.add_result(score)
+print(regressor_name, 'Error: %0.4f' % score)
 
 result_writer.write()

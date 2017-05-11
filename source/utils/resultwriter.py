@@ -23,9 +23,8 @@ class ResultWriter:
         self.results['feature_generator'] = transformer.get_name()
         self.results['num_features'] = num_features
 
-    def add_result(self, score, stdev):
+    def add_result(self, score):
         self.results['error'] = score
-        self.results['stdev'] = stdev
 
     def write(self):
         self.results['end_time'] = time.ctime()
