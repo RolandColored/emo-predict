@@ -10,7 +10,6 @@ from features.glovevectorizer import GloveVectorizer
 from features.nrcemolex import NRCEmoLex
 from features.posdistribution import PosDistribution
 from features.readability import Readability
-from features.sentencelength import SentenceLength
 from features.textextractor import TextExtractor
 
 
@@ -97,7 +96,7 @@ class PipelineConfig:
     @staticmethod
     def text_bow_title_and_message_glove(lang):
         return make_pipeline(FeatureUnion([
-            ('text', PipelineConfig.text_bow(lang)),
+            ('text', PipelineConfig.text_bow_500(lang)),
             ('title', make_pipeline(TextExtractor(column='title'),
                                     GloveVectorizer(lang=lang))),
             ('message', make_pipeline(TextExtractor(column='message'),
@@ -121,14 +120,8 @@ class PipelineConfig:
     @staticmethod
     def text_readability(lang):
         return make_pipeline(TextExtractor(column='text'),
-                             Readability(),
+                             Readability(lang),
                              DictVectorizer(sparse=False),
-                             StandardScaler())
-
-    @staticmethod
-    def text_sent(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             SentenceLength(),
                              StandardScaler())
 
     @staticmethod
@@ -145,7 +138,6 @@ class PipelineConfig:
             ('text_readability', PipelineConfig.text_readability(lang)),
             ('text_depechemood', PipelineConfig.text_depechemood(lang)),
             ('text_emolex', PipelineConfig.text_emolex(lang)),
-            ('text_sent', PipelineConfig.text_sent(lang)),
             ('text_bow', make_pipeline(TextExtractor(column='text'),
                                        CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
                                        TfidfTransformer(),
@@ -157,7 +149,6 @@ class PipelineConfig:
         return make_pipeline(FeatureUnion([
             ('text_pos', PipelineConfig.text_pos(lang)),
             ('text_emolex', PipelineConfig.text_emolex(lang)),
-            ('text_sent', PipelineConfig.text_sent(lang)),
             ('text_bow', make_pipeline(TextExtractor(column='text'),
                                        CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
                                        TfidfTransformer(),

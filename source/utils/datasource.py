@@ -9,7 +9,8 @@ class DataSource:
     absolute_reactions = []
     rows = []
 
-    def __init__(self, filenames):
+    def __init__(self, data_dir, filenames):
+        self.data_dir = data_dir
         self.filenames = filenames
         self._read_files()
 
@@ -26,7 +27,7 @@ class DataSource:
 
     def _read_files(self):
         for filename in self.filenames:
-            with open('../articles/' + filename + '.csv') as csv_file:
+            with open(self.data_dir + filename + '.csv') as csv_file:
                 reader = csv.DictReader(csv_file)
                 for row in reader:
                     self._read_row(row)

@@ -1,12 +1,27 @@
 import textacy
 from sklearn.base import BaseEstimator
+from textacy.text_stats import TextStats
 
 
 class Readability(BaseEstimator):
+
+    def __init__(self, lang):
+        self.lang = lang
 
     def fit(self, X, y=None):
         return self
 
     def transform(self, X):
-        return [textacy.text_stats.readability_stats(textacy.Doc(row)) for row in X]
+        ret = []
+        for row in X:
+            stats = TextStats(textacy.Doc(row, lang=self.lang))
+            stats_dict = stats.basic_counts
+
+            if self.lang == 'de':
+                stats_dict['readability'] = stats.wiener_sachtextformel
+            else:
+                stats_dict['readability'] = stats.gunning_fog_index
+
+            ret.append(stats_dict)
+        return ret
 

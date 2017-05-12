@@ -18,7 +18,7 @@ output_dir = sys.argv[4]
 
 # setup
 source_dir = os.path.dirname(__file__)
-data_source = DataSource(data_source_names)
+data_source = DataSource(source_dir + '/../articles/', data_source_names)
 result_writer = ResultWriter(output_dir + '/' + data_source.get_lang() + '_' + pipeline_name + '_' + regressor_name + '.csv')
 print(data_source.get_num_rows(), "Samples processed")
 
