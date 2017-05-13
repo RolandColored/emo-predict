@@ -1,3 +1,4 @@
+from nltk.corpus import stopwords
 from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
@@ -7,9 +8,11 @@ from sklearn.preprocessing import StandardScaler
 
 from features.depechemood import DepecheMood
 from features.glovevectorizer import GloveVectorizer
+from features.lemmatizer import Lemmatizer
 from features.nrcemolex import NRCEmoLex
 from features.posdistribution import PosDistribution
 from features.readability import Readability
+from features.stemmedcountvectorizer import StemmedCountVectorizer
 from features.textextractor import TextExtractor
 
 
@@ -36,7 +39,22 @@ class PipelineConfig:
     @staticmethod
     def text_bow_500(lang):
         return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
+                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
+                             TfidfTransformer(),
+                             TruncatedSVD(n_components=500))
+
+    @staticmethod
+    def text_stemmed_bow_500(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             StemmedCountVectorizer(lang, strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
+                             TfidfTransformer(),
+                             TruncatedSVD(n_components=500))
+
+    @staticmethod
+    def text_lemmatized_bow_500(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             Lemmatizer(lang),
+                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
                              TfidfTransformer(),
                              TruncatedSVD(n_components=500))
 
@@ -154,3 +172,9 @@ class PipelineConfig:
                                        TfidfTransformer(),
                                        TruncatedSVD(n_components=500)))
         ], transformer_weights={'text_bow': 0.5, 'text_emolex': 0.3, 'text_pos': 0.15, 'text_sent': 0.05}))
+
+    @staticmethod
+    def _stop_words(lang):
+        if lang == 'de':
+            return stopwords.words('german')
+        return stopwords.words('english')
