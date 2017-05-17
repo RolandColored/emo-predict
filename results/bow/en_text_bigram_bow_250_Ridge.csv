@@ -1,0 +1,2 @@
+start_time,end_time,data_source,regressor_name,num_samples,num_skipped,reaction_count_mean,reaction_count_stdev,feature_generator,num_features,error
+Tue May 16 22:00:51 2017,Tue May 16 22:01:50 2017,foxnews+nytimes+theguardian,Ridge,14582,309,5573.97622725136,16507.198274998085,text_bigram_bow_250,250,0.10384704272073936
