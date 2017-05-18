@@ -1,6 +1,3 @@
-import glob
-import os
-
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib import rcParams, rc
@@ -10,11 +7,8 @@ rcParams.update({'figure.autolayout': True})
 rc('font', **{'family': 'Palatino'})
 plt.style.use('ggplot')
 
-# gather data
-path = '../../results/bow/'
-all_files = glob.glob(os.path.join(path, "*.csv"))
-df_from_each_file = (pd.read_csv(f) for f in all_files)
-df = pd.concat(df_from_each_file, ignore_index=True)
+# read data
+df = pd.read_csv('../../results/bow.csv')
 
 # filter and sort
 df = df[df['data_source'].str.contains('foxnews')]
