@@ -3,8 +3,12 @@ import os
 
 import pandas as pd
 
-folder = 'bow'
+folder = 'bow_regressors'
 path = '../../results/' + folder
 
-df = pd.concat(map(pd.read_csv, glob.glob(os.path.join(path, '*.csv'))))
-df.to_csv(path + '/../' + folder + '.csv')
+dfs = []
+for file in glob.glob(os.path.join(path, '*.csv')):
+    df = pd.read_csv(file)
+    dfs.append(df.tail(1))
+
+pd.concat(dfs).to_csv(path + '/../' + folder + '.csv')
