@@ -8,3 +8,4 @@ py_lex
 textacy
 matplotlib
 pandas
+iwnlp
