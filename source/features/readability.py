@@ -17,7 +17,7 @@ class Readability(BaseEstimator):
             stats = TextStats(textacy.Doc(row, lang=self.lang))
             stats_dict = stats.basic_counts
 
-            if len(row) > 0:
+            if stats_dict['n_words'] > 0:
                 if self.lang == 'de':
                     stats_dict['readability'] = stats.wiener_sachtextformel
                 else:
