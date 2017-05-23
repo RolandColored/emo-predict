@@ -17,10 +17,13 @@ class Readability(BaseEstimator):
             stats = TextStats(textacy.Doc(row, lang=self.lang))
             stats_dict = stats.basic_counts
 
-            if self.lang == 'de':
-                stats_dict['readability'] = stats.wiener_sachtextformel
+            if len(row) > 0:
+                if self.lang == 'de':
+                    stats_dict['readability'] = stats.wiener_sachtextformel
+                else:
+                    stats_dict['readability'] = stats.gunning_fog_index
             else:
-                stats_dict['readability'] = stats.gunning_fog_index
+                stats_dict['readability'] = 0
 
             ret.append(stats_dict)
         return ret
