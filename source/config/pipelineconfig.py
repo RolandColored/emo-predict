@@ -38,7 +38,7 @@ class PipelineConfig:
     @staticmethod
     def text_depechemood(lang):
         return make_pipeline(TextExtractor(column='text'),
-                             DepecheMood(),
+                             DepecheMood(lang=lang),
                              DictVectorizer(sparse=False),
                              StandardScaler())
 
@@ -80,7 +80,7 @@ class PipelineConfig:
     @staticmethod
     def title_depechemood(lang):
         return make_pipeline(TextExtractor(column='title'),
-                             DepecheMood(),
+                             DepecheMood(lang=lang),
                              DictVectorizer(sparse=False),
                              StandardScaler())
 
@@ -122,7 +122,7 @@ class PipelineConfig:
     @staticmethod
     def message_depechemood(lang):
         return make_pipeline(TextExtractor(column='message'),
-                             DepecheMood(),
+                             DepecheMood(lang=lang),
                              DictVectorizer(sparse=False),
                              StandardScaler())
 
