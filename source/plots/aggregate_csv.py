@@ -3,7 +3,7 @@ import os
 
 import pandas as pd
 
-folder = 'bow_regressors'
+folder = 'features'
 path = '../../results/' + folder
 
 dfs = []
