@@ -1,35 +1,20 @@
 from nltk.corpus import stopwords
 from sklearn.decomposition import TruncatedSVD
+from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
-from features.lemmatizer import Lemmatizer
-from features.stemmedcountvectorizer import StemmedCountVectorizer
+from features.depechemood import DepecheMood
+from features.glovevectorizer import GloveVectorizer
+from features.nrcemolex import NRCEmoLex
+from features.posdistribution import PosDistribution
+from features.readability import Readability
 from features.textextractor import TextExtractor
 
 
 class PipelineConfig:
-    @staticmethod
-    def text_tfidf_bow_100(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=100))
-
-    @staticmethod
-    def text_tfidf_bow_250(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=250))
-
-    @staticmethod
-    def text_tfidf_bow_500(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=500))
 
     @staticmethod
     def text_tfidf_bow_1000(lang):
@@ -38,357 +23,122 @@ class PipelineConfig:
                              TfidfTransformer(),
                              TruncatedSVD(n_components=1000))
 
+    @staticmethod
+    def text_glove(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             GloveVectorizer(lang=lang))
+
+    @staticmethod
+    def text_emolex(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             NRCEmoLex(lang),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
+
+    @staticmethod
+    def text_depechemood(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             DepecheMood(),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
+
+    @staticmethod
+    def text_readability(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             Readability(lang),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
+
+    @staticmethod
+    def text_pos(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             PosDistribution(lang),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
+
 
 
     @staticmethod
-    def text_tfidf_stemmed_bow_100(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=100))
-
-    @staticmethod
-    def text_tfidf_stemmed_bow_250(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=250))
-
-    @staticmethod
-    def text_tfidf_stemmed_bow_500(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=500))
-
-    @staticmethod
-    def text_tfidf_stemmed_bow_1000(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=1000))
-
-
-
-
-    @staticmethod
-    def text_tfidf_lemmatized_bow_100(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=100))
-
-    @staticmethod
-    def text_tfidf_lemmatized_bow_250(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=250))
-
-    @staticmethod
-    def text_tfidf_lemmatized_bow_500(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=500))
-
-    @staticmethod
-    def text_tfidf_lemmatized_bow_1000(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
+    def title_tfidf_bow_1000(lang):
+        return make_pipeline(TextExtractor(column='title'),
                              CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
                              TfidfTransformer(),
                              TruncatedSVD(n_components=1000))
 
+    @staticmethod
+    def title_glove(lang):
+        return make_pipeline(TextExtractor(column='title'),
+                             GloveVectorizer(lang=lang))
+
+    @staticmethod
+    def title_emolex(lang):
+        return make_pipeline(TextExtractor(column='title'),
+                             NRCEmoLex(lang),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
+
+    @staticmethod
+    def title_depechemood(lang):
+        return make_pipeline(TextExtractor(column='title'),
+                             DepecheMood(),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
+
+    @staticmethod
+    def title_readability(lang):
+        return make_pipeline(TextExtractor(column='title'),
+                             Readability(lang),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
+
+    @staticmethod
+    def title_pos(lang):
+        return make_pipeline(TextExtractor(column='title'),
+                             PosDistribution(lang),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
 
 
 
     @staticmethod
-    def text_tfidf_bigram_bow_100(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=100))
-
-    @staticmethod
-    def text_tfidf_bigram_bow_250(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=250))
-
-    @staticmethod
-    def text_tfidf_bigram_bow_500(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=500))
-
-    @staticmethod
-    def text_tfidf_bigram_bow_1000(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=1000))
-
-
-
-
-    @staticmethod
-    def text_tfidf_bigram_stemmed_bow_100(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', min_df=0.001, max_df=0.8,
-                                                    ngram_range=(2, 2), stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=100))
-
-    @staticmethod
-    def text_tfidf_bigram_stemmed_bow_250(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', min_df=0.001, max_df=0.8,
-                                                    ngram_range=(2, 2), stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=250))
-
-    @staticmethod
-    def text_tfidf_bigram_stemmed_bow_500(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', min_df=0.001, max_df=0.8,
-                                                    ngram_range=(2, 2), stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=500))
-
-    @staticmethod
-    def text_tfidf_bigram_stemmed_bow_1000(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', min_df=0.001, max_df=0.8,
-                                                    ngram_range=(2, 2), stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=1000))
-
-
-
-    @staticmethod
-    def text_tfidf_bigram_lemmatized_bow_100(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=100))
-
-    @staticmethod
-    def text_tfidf_bigram_lemmatized_bow_250(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=250))
-
-    @staticmethod
-    def text_tfidf_bigram_lemmatized_bow_500(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=500))
-
-    @staticmethod
-    def text_tfidf_bigram_lemmatized_bow_1000(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TfidfTransformer(),
-                             TruncatedSVD(n_components=1000))
-
-
-    @staticmethod
-    def text_bow_100(lang):
-        return make_pipeline(TextExtractor(column='text'),
+    def message_tfidf_bow_1000(lang):
+        return make_pipeline(TextExtractor(column='message'),
                              CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=100))
-
-    @staticmethod
-    def text_bow_250(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=250))
-
-    @staticmethod
-    def text_bow_500(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=500))
-
-    @staticmethod
-    def text_bow_1000(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
+                             TfidfTransformer(),
                              TruncatedSVD(n_components=1000))
 
-
+    @staticmethod
+    def message_glove(lang):
+        return make_pipeline(TextExtractor(column='message'),
+                             GloveVectorizer(lang=lang))
 
     @staticmethod
-    def text_stemmed_bow_100(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=100))
+    def message_emolex(lang):
+        return make_pipeline(TextExtractor(column='message'),
+                             NRCEmoLex(lang),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
 
     @staticmethod
-    def text_stemmed_bow_250(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=250))
+    def message_depechemood(lang):
+        return make_pipeline(TextExtractor(column='message'),
+                             DepecheMood(),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
 
     @staticmethod
-    def text_stemmed_bow_500(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=500))
+    def message_readability(lang):
+        return make_pipeline(TextExtractor(column='message'),
+                             Readability(lang),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
 
     @staticmethod
-    def text_stemmed_bow_1000(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=1000))
-
-
-
-
-    @staticmethod
-    def text_lemmatized_bow_100(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=100))
-
-    @staticmethod
-    def text_lemmatized_bow_250(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=250))
-
-    @staticmethod
-    def text_lemmatized_bow_500(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=500))
-
-    @staticmethod
-    def text_lemmatized_bow_1000(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=1000))
-
-
-
-
-    @staticmethod
-    def text_bigram_bow_100(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=100))
-
-    @staticmethod
-    def text_bigram_bow_250(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=250))
-
-    @staticmethod
-    def text_bigram_bow_500(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=500))
-
-    @staticmethod
-    def text_bigram_bow_1000(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=1000))
-
-
-
-
-    @staticmethod
-    def text_bigram_stemmed_bow_100(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', min_df=0.001, max_df=0.8,
-                                                    ngram_range=(2, 2), stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=100))
-
-    @staticmethod
-    def text_bigram_stemmed_bow_250(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', min_df=0.001, max_df=0.8,
-                                                    ngram_range=(2, 2), stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=250))
-
-    @staticmethod
-    def text_bigram_stemmed_bow_500(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', min_df=0.001, max_df=0.8,
-                                                    ngram_range=(2, 2), stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=500))
-
-    @staticmethod
-    def text_bigram_stemmed_bow_1000(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             StemmedCountVectorizer(lang, strip_accents='ascii', min_df=0.001, max_df=0.8,
-                                                    ngram_range=(2, 2), stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=1000))
-
-
-
-    @staticmethod
-    def text_bigram_lemmatized_bow_100(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=100))
-
-    @staticmethod
-    def text_bigram_lemmatized_bow_250(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=250))
-
-    @staticmethod
-    def text_bigram_lemmatized_bow_500(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=500))
-
-    @staticmethod
-    def text_bigram_lemmatized_bow_1000(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Lemmatizer(lang),
-                             CountVectorizer(strip_accents='ascii', min_df=0.001, max_df=0.8, ngram_range=(2, 2),
-                                             stop_words=PipelineConfig._stop_words(lang)),
-                             TruncatedSVD(n_components=1000))
-
+    def message_pos(lang):
+        return make_pipeline(TextExtractor(column='message'),
+                             PosDistribution(lang),
+                             DictVectorizer(sparse=False),
+                             StandardScaler())
 
 
     @staticmethod
