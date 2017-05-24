@@ -23,9 +23,18 @@ class Lemmatizer(BaseEstimator):
 
             # workaround until german lemmatizer is integrated in spacy
             if self.lang == 'de':
-                new_row = ' '.join([self.iwnlp.lemmatize(str(word), word.pos_) for word in doc])
+                new_row = self._lemmatize_german(doc)
             else:
                 new_row = ' '.join([word.lemma_ for word in doc])
             ret_list.append(new_row)
-            print(new_row)
         return ret_list
+
+    def _lemmatize_german(self, doc):
+        new_row = ''
+        for word in doc:
+            lemmatized = self.iwnlp.lemmatize(str(word), word.pos_)
+            if lemmatized is not None:
+                new_row += ' ' + lemmatized[0]
+            else:
+                new_row += ' ' + str(word)
+        return new_row
