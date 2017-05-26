@@ -3,7 +3,7 @@ import os
 
 import pandas as pd
 
-folder = 'features'
+folder = 'bow_combinations'
 path = '../../results/' + folder
 
 dfs = []

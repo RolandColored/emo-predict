@@ -1,6 +1,6 @@
 from config.pipelineconfig import PipelineConfig
 
-datasets = ['foxnews+nytimes+theguardian', 'bild+spiegelonline+ihre.sz']
+datasets = ['bild+spiegelonline+ihre.sz']
 features = [func for func in dir(PipelineConfig) if callable(getattr(PipelineConfig, func))
             and not func.startswith('_')]
 #features = ['text_tfidf_bow_100', 'text_tfidf_bow_250', 'text_tfidf_bow_500', 'text_tfidf_bow_1000']

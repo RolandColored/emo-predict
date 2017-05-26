@@ -11,7 +11,7 @@ plt.style.use('ggplot')
 df = pd.read_csv('../../results/features.csv')
 
 # filter and sort
-df = df[df['data_source'].str.contains('foxnews')]
+df = df[df['data_source'].str.contains('bild')]
 df = df.sort_values('error')
 
 # plot
@@ -29,5 +29,5 @@ plot = df.plot(kind='bar', y='error', x='feature_generator', legend=False, color
 # labels
 plt.ylabel('RMSE')
 plt.xlabel('Feature')
-plt.savefig('features_en.pdf', format='pdf')
+plt.savefig('features_de.pdf', format='pdf')
 #plt.show()
