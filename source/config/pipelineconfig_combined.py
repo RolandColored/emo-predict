@@ -8,115 +8,111 @@ from sklearn.preprocessing import StandardScaler
 
 from features.depechemood import DepecheMood
 from features.glovevectorizer import GloveVectorizer
-from features.nrcemolex import NRCEmoLex
-from features.posdistribution import PosDistribution
-from features.readability import Readability
 from features.textextractor import TextExtractor
 
 
 class PipelineConfig:
 
-
     @staticmethod
-    def text_unigram_bigram_bow(lang):
-        return make_pipeline(FeatureUnion([
-            ('unigram', make_pipeline(TextExtractor(column='text'),
-                                      CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
-                                      TfidfTransformer(),
-                                      TruncatedSVD(n_components=400))),
-            ('bigram', make_pipeline(TextExtractor(column='title'),
-                                     CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9, ngram_range=(2, 2)),
-                                     TfidfTransformer(),
-                                     TruncatedSVD(n_components=300))),
-        ]))
-
-    @staticmethod
-    def text_and_title_and_message_bow(lang):
-        return make_pipeline(FeatureUnion([
-            ('text', make_pipeline(TextExtractor(column='text'),
-                                   CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
-                                   TfidfTransformer(),
-                                   TruncatedSVD(n_components=400))),
-            ('title', make_pipeline(TextExtractor(column='title'),
-                                    CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
-                                    TfidfTransformer(),
-                                    TruncatedSVD(n_components=300))),
-            ('message', make_pipeline(TextExtractor(column='message'),
-                                      CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
-                                      TfidfTransformer(),
-                                      TruncatedSVD(n_components=300))),
-        ]))
-
-    @staticmethod
-    def title_and_message_glove(lang):
-        return make_pipeline(FeatureUnion([
-            ('title', make_pipeline(TextExtractor(column='title'),
-                                    GloveVectorizer(lang=lang))),
-            ('message', make_pipeline(TextExtractor(column='message'),
-                                      GloveVectorizer(lang=lang))),
-        ]))
-
-    @staticmethod
-    def text_bow_title_and_message_glove(lang):
-        return make_pipeline(FeatureUnion([
-            ('text', PipelineConfig.text_bow_500(lang)),
-            ('title', make_pipeline(TextExtractor(column='title'),
-                                    GloveVectorizer(lang=lang))),
-            ('message', make_pipeline(TextExtractor(column='message'),
-                                      GloveVectorizer(lang=lang))),
-        ]))
-
-    @staticmethod
-    def text_emolex(lang):
+    def text_tfidf_bow_1000(lang):
         return make_pipeline(TextExtractor(column='text'),
-                             NRCEmoLex(lang),
-                             DictVectorizer(sparse=False),
-                             StandardScaler())
+                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
+                             TfidfTransformer(),
+                             TruncatedSVD(n_components=1000))
+
+    @staticmethod
+    def text_glove(lang):
+        return make_pipeline(TextExtractor(column='text'),
+                             GloveVectorizer(lang=lang))
 
     @staticmethod
     def text_depechemood(lang):
         return make_pipeline(TextExtractor(column='text'),
-                             DepecheMood(),
+                             DepecheMood(lang=lang),
                              DictVectorizer(sparse=False),
                              StandardScaler())
 
     @staticmethod
-    def text_readability(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             Readability(lang),
-                             DictVectorizer(sparse=False),
-                             StandardScaler())
+    def title_tfidf_bow_1000(lang):
+        return make_pipeline(TextExtractor(column='title'),
+                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
+                             TfidfTransformer(),
+                             TruncatedSVD(n_components=1000))
 
     @staticmethod
-    def text_pos(lang):
-        return make_pipeline(TextExtractor(column='text'),
-                             PosDistribution(lang),
-                             DictVectorizer(sparse=False),
-                             StandardScaler())
+    def title_glove(lang):
+        return make_pipeline(TextExtractor(column='title'),
+                             GloveVectorizer(lang=lang))
 
     @staticmethod
-    def text_multiple_en(lang):
+    def message_tfidf_bow_1000(lang):
+        return make_pipeline(TextExtractor(column='message'),
+                             CountVectorizer(strip_accents='ascii', stop_words=PipelineConfig._stop_words(lang)),
+                             TfidfTransformer(),
+                             TruncatedSVD(n_components=1000))
+
+    @staticmethod
+    def message_glove(lang):
+        return make_pipeline(TextExtractor(column='message'),
+                             GloveVectorizer(lang=lang))
+
+    @staticmethod
+    def text_bow_and_text_glove(lang):
         return make_pipeline(FeatureUnion([
-            ('text_pos', PipelineConfig.text_pos(lang)),
-            ('text_readability', PipelineConfig.text_readability(lang)),
-            ('text_depechemood', PipelineConfig.text_depechemood(lang)),
-            ('text_emolex', PipelineConfig.text_emolex(lang)),
-            ('text_bow', make_pipeline(TextExtractor(column='text'),
-                                       CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
-                                       TfidfTransformer(),
-                                       TruncatedSVD(n_components=500)))
+            ('text_bow', PipelineConfig.text_tfidf_bow_1000(lang)),
+            ('text_glove', PipelineConfig.text_glove(lang)),
         ]))
 
     @staticmethod
-    def text_multiple(lang):
+    def text_bow_and_text_glove_and_title_bow(lang):
         return make_pipeline(FeatureUnion([
-            ('text_pos', PipelineConfig.text_pos(lang)),
-            ('text_emolex', PipelineConfig.text_emolex(lang)),
-            ('text_bow', make_pipeline(TextExtractor(column='text'),
-                                       CountVectorizer(strip_accents='ascii', min_df=1, max_df=0.9),
-                                       TfidfTransformer(),
-                                       TruncatedSVD(n_components=500)))
-        ], transformer_weights={'text_bow': 0.5, 'text_emolex': 0.3, 'text_pos': 0.15, 'text_sent': 0.05}))
+            ('text_bow', PipelineConfig.text_tfidf_bow_1000(lang)),
+            ('text_glove', PipelineConfig.text_glove(lang)),
+            ('title_bow', PipelineConfig.title_tfidf_bow_1000(lang)),
+        ]))
+
+    @staticmethod
+    def text_bow_and_text_depechemood(lang):
+        return make_pipeline(FeatureUnion([
+            ('text_bow', PipelineConfig.text_tfidf_bow_1000(lang)),
+            ('text_depechemood', PipelineConfig.text_depechemood(lang)),
+        ]))
+
+    @staticmethod
+    def text_bow_and_text_glove_and_title_bow_and_text_depechemood(lang):
+        return make_pipeline(FeatureUnion([
+            ('text_bow', PipelineConfig.text_tfidf_bow_1000(lang)),
+            ('text_glove', PipelineConfig.text_glove(lang)),
+            ('title_bow', PipelineConfig.title_tfidf_bow_1000(lang)),
+            ('text_depechemood', PipelineConfig.text_depechemood(lang)),
+        ]))
+
+    @staticmethod
+    def all_bow(lang):
+        return make_pipeline(FeatureUnion([
+            ('text_bow', PipelineConfig.text_tfidf_bow_1000(lang)),
+            ('title_bow', PipelineConfig.title_tfidf_bow_1000(lang)),
+            ('message_bow', PipelineConfig.message_tfidf_bow_1000(lang)),
+        ]))
+
+    @staticmethod
+    def all_glove(lang):
+        return make_pipeline(FeatureUnion([
+            ('text_glove', PipelineConfig.text_glove(lang)),
+            ('title_glove', PipelineConfig.title_glove(lang)),
+            ('message_glove', PipelineConfig.message_glove(lang)),
+        ]))
+
+    @staticmethod
+    def all_bow_and_glove(lang):
+        return make_pipeline(FeatureUnion([
+            ('text_bow', PipelineConfig.text_tfidf_bow_1000(lang)),
+            ('title_bow', PipelineConfig.title_tfidf_bow_1000(lang)),
+            ('message_bow', PipelineConfig.message_tfidf_bow_1000(lang)),
+            ('text_glove', PipelineConfig.text_glove(lang)),
+            ('title_glove', PipelineConfig.title_glove(lang)),
+            ('message_glove', PipelineConfig.message_glove(lang)),
+        ]))
 
     @staticmethod
     def _stop_words(lang):
