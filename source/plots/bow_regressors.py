@@ -18,9 +18,6 @@ fig, ax = plt.subplots(figsize=(8, 6))
 groups = df.groupby('regressor_name')
 i = 0
 for label, group in groups:
-    if len(group) < 4:
-        print('Missing values for: ' + group['regressor_name'].iloc[0] + '; present: ' + str(group['num_features'].tolist()))
-
     group = group.sort_values('num_features')
     group.plot(ax=ax, x='num_features', y='error', label=label, marker='.', linestyle=linestyles[int(i / 6)])
     i += 1

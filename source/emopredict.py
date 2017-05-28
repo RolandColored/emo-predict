@@ -3,7 +3,7 @@ import sys
 
 from sklearn.metrics import make_scorer
 
-from config.pipelineconfig_features import PipelineConfig
+from config.pipelineconfig_combined import PipelineConfig
 from config.regressors import regressors_dict
 from features.transformer import Transformer
 from utils.datasource import DataSource
