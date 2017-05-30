@@ -11,12 +11,14 @@ plt.style.use('ggplot')
 df = pd.read_csv('../../results/features.csv')
 
 # filter and sort
-df = df[df['data_source'].str.contains('bild')]
+df = df[df['data_source'].str.contains('foxnews')]
 
 # prepare data
 df = df[['error', 'feature_generator', 'regressor_name']]
 df = df.groupby('regressor_name').mean()
 df = df.sort_values('error')
+
+print(df)
 
 # set other color for baseline
 colors = ['C1'] * len(df)
@@ -25,9 +27,9 @@ for i, row in enumerate(df.index):
         colors[i] = 'C0'
 
 # plot
-plot = df.plot.bar(legend=False, color=colors, ylim=(0.12, 0.18))
+plot = df.plot.bar(legend=False, color=colors, ylim=(0.11, 0.18))
 
 # labels
 plt.ylabel('Mean RMSE per Feature')
 plt.xlabel('Regressor')
-plt.savefig('features_de.pdf', format='pdf')
+#plt.savefig('features_mean_en.pdf', format='pdf')

@@ -19,7 +19,8 @@ groups = df.groupby('regressor_name')
 i = 0
 for label, group in groups:
     group = group.sort_values('num_features')
-    group.plot(ax=ax, x='num_features', y='error', label=label, marker='.', linestyle=linestyles[int(i / 6)])
+    group.plot(ax=ax, x='num_features', y='error', label=label, marker='.',
+               linestyle=linestyles[int(i / 6)], ylim=(0.09, 0.17))
     i += 1
 
 # legend
