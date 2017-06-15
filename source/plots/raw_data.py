@@ -2,15 +2,17 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib import rcParams, rc
 
+lang = 'de'
+
 # rendering options
 rcParams.update({'figure.autolayout': True})
 rc('font', **{'family': 'Palatino'})
 plt.style.use('ggplot')
 
 # plot
-df_ridge = pd.read_csv('../../results/raw_predictions/raw_data_en.csv')
+df_ridge = pd.read_csv('../../results/raw_predictions/raw_data_' + lang + '.csv')
 df_ridge['source'] = 'Ridge'
-df_baseline = pd.read_csv('../../results/raw_predictions/raw_data_baseline_en.csv')
+df_baseline = pd.read_csv('../../results/raw_predictions/raw_data_baseline_' + lang + '.csv')
 df_baseline['source'] = 'Baseline'
 df_all = df_ridge.append(df_baseline)
 
@@ -22,5 +24,5 @@ for plot in plots:
     plot.set_ylabel('Root Squared Error')
     plot.set_xlabel('Label')
 
-plt.savefig('raw_data_en.pdf', format='pdf')
+plt.savefig('raw_data_' + lang + '.pdf', format='pdf')
 #plt.show()
