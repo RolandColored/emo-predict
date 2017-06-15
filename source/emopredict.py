@@ -1,13 +1,12 @@
 import os
 import sys
 
-from sklearn.metrics import make_scorer
-
 from config.pipelineconfig_combined import PipelineConfig
 from config.regressors import regressors_dict
 from features.transformer import Transformer
 from utils.datasource import DataSource
-from utils.metrics import root_mean_squared_error
+from utils.metrics import root_mean_squared_error, error_logger
+from utils.rawdatawriter import RawDataWriter
 from utils.resultwriter import ResultWriter
 
 # parameters: emopredict.py datasource1+datasource2+... pipeline regressor outputdir
@@ -37,11 +36,12 @@ result_writer.set_meta_data(data_source, transformer, regressor_name, num_featur
 
 
 # evaluate
-# scorer = make_scorer(error_logger, results_sink=RawDataWriter())
-scorer = make_scorer(root_mean_squared_error)
 regressor = regressors_dict[regressor_name]
 regressor.fit(X_train, y_train)
-score = root_mean_squared_error(y_test, regressor.predict(X_test))
+
+y_predicted = regressor.predict(X_test)
+score = root_mean_squared_error(y_test, y_predicted)
+error_logger(y_test, y_predicted, results_sink=RawDataWriter())
 
 result_writer.add_result(score)
 print(regressor_name, 'Error: %0.4f' % score)
